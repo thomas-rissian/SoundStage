@@ -2,20 +2,34 @@
 
 namespace App\Controller\Api;
 
+use App\Entity\Artist;
+use App\Entity\User;
+use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
-use Symfony\Component\HttpFoundation\Response;
+use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\Routing\Attribute\Route;
 use OpenApi\Attributes as OA;
+use Symfony\Component\Serializer\SerializerInterface;
 
 final class ApiUserController extends AbstractController{
-    #[Route('/api/user', name: 'api_user', methods: ['GET'])]
+    #[Route('/api/user', name: 'app_api_get_all_user', methods: ['GET'])]
     #[OA\Get(
         path: '/api/user',
     )]
-    public function getAllUser(): Response
+    public function getAllUser(EntityManagerInterface $entityManage, SerializerInterface $serializer): JsonResponse
     {
-        return $this->render('api_user/index.html.twig', [
-            'controller_name' => 'ApiUserController',
-        ]);
+        $artists = $entityManage->getRepository(User::class)->findAll();
+
+        return JsonResponse::fromJsonString($serializer->serialize($artists, 'json'));
+    }
+    #[Route('/api/user/{id}', name: 'app_api_get_user', methods: ['GET'])]
+    #[OA\Get(
+        path: '/api/user/{id}',
+    )]
+    public function getOneUser(EntityManagerInterface $entityManage, SerializerInterface $serializer,int $id): JsonResponse
+    {
+        $artists = $entityManage->getRepository(User::class)->find($id);
+
+        return JsonResponse::fromJsonString($serializer->serialize($artists, 'json'));
     }
 }
