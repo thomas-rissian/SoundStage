@@ -1,0 +1,16 @@
+{% extends 'base.html.twig' %}
+
+{% block body %}
+    <div>
+        <ul>
+            <li>{{ artist.name }}</li>
+            <li>{{ artist.description }}</li>
+            <li><img src="{{ artist.image }}"/></li>
+        </ul>
+    </div>
+{% endblock %}
+
+{% block title %}
+
+{% endblock %}
+

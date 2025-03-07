@@ -19,6 +19,7 @@ class Artist
     #[ORM\Column(length: 255)]
     private ?string $name = null;
 
+
     #[ORM\Column(length: 255)]
     private ?string $image = null;
 
@@ -27,6 +28,9 @@ class Artist
      */
     #[ORM\OneToMany(targetEntity: Event::class, mappedBy: 'artist')]
     private Collection $events;
+
+    #[ORM\Column(length: 255)]
+    private ?string $description = null;
 
     public function __construct()
     {
@@ -87,6 +91,18 @@ class Artist
                 $event->setArtist(null);
             }
         }
+
+        return $this;
+    }
+
+    public function getDescription(): ?string
+    {
+        return $this->description;
+    }
+
+    public function setDescription(string $description): static
+    {
+        $this->description = $description;
 
         return $this;
     }
