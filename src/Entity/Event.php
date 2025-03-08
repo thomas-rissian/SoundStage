@@ -6,6 +6,7 @@ use App\Repository\EventRepository;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\DBAL\Types\Types;
+use Doctrine\ORM\EntityManager;
 use Doctrine\ORM\Mapping as ORM;
 
 #[ORM\Entity(repositoryClass: EventRepository::class)]
@@ -29,8 +30,12 @@ class Event
     /**
      * @var Collection<int, UserEvent>
      */
-    #[ORM\OneToMany(targetEntity: UserEvent::class, mappedBy: 'event')]
+    #[ORM\OneToMany(targetEntity: UserEvent::class, mappedBy: 'event' , cascade: ['persist', 'remove'])]
     private Collection $userEvents;
+
+    #[ORM\ManyToOne(inversedBy: 'events')]
+    #[ORM\JoinColumn(nullable: false)]
+    private ?User $createdBy = null;
 
     public function __construct()
     {
@@ -95,15 +100,58 @@ class Event
 
         return $this;
     }
+    public function addUser(User $user): static
+    {
+
+        $userEvent = new UserEvent();
+        $userEvent->setUserRef($user);
+        $userEvent->setEvent($this);
+        $this->addUserEvent($userEvent);
+
+        return $this;
+    }
+
+    public function isRegister(User $user): bool
+    {
+        foreach ($this->userEvents as $userEvent) {
+            if ($userEvent->getUserRef() === $user) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    public function removeUser(User $user): static
+    {
+        foreach ($this->userEvents as $userEvent) {
+            if($userEvent->getUserRef() === $user) {
+                $this->userEvents->removeElement($userEvent);
+                $userEvent->setEvent(null);
+                $userEvent->setUserRef(null);
+            }
+        }
+        return $this;
+    }
 
     public function removeUserEvent(UserEvent $userEvent): static
     {
         if ($this->userEvents->removeElement($userEvent)) {
-            // set the owning side to null (unless already changed)
             if ($userEvent->getEvent() === $this) {
                 $userEvent->setEvent(null);
             }
         }
+
+        return $this;
+    }
+
+    public function getCreatedBy(): ?User
+    {
+        return $this->createdBy;
+    }
+
+    public function setCreatedBy(?User $createdBy): static
+    {
+        $this->createdBy = $createdBy;
 
         return $this;
     }

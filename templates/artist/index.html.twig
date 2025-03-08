@@ -1,6 +1,6 @@
 {% extends 'base.html.twig' %}
 
-{% block title %}Hello ArtistController!{% endblock %}
+{% block title %}Listes des Artistes{% endblock %}
 
 {% block body %}
 <style>
@@ -9,10 +9,12 @@
 </style>
 
 <div class="example-wrapper">
-    <h1>Artistes : </h1>
+    <h1>Artistes : <a href="{{ path('app_artist_create') }}">Créer</a> </h1>
     <ul>
         {% for artist in artists %}
-            <li><a href = "{{ path('app_artist_one', {id: artist.id}) }}">{{ artist.name }} </a></li>
+            <li><a href = "{{ path('app_artist_one', {id: artist.id}) }}">{{ artist.name }} </a>
+                | <a href="{{ path('app_artist_edit', {id : artist.id}) }}">Modifier</a>
+                | <a href="{{ path('app_artist_delete',{id : artist.id}) }}">Supprimer</a></li>
         {% endfor %}
     </ul>
 

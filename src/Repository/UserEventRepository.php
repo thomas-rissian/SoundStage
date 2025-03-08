@@ -2,6 +2,8 @@
 
 namespace App\Repository;
 
+use App\Entity\Event;
+use App\Entity\User;
 use App\Entity\UserEvent;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\Persistence\ManagerRegistry;
@@ -15,7 +17,6 @@ class UserEventRepository extends ServiceEntityRepository
     {
         parent::__construct($registry, UserEvent::class);
     }
-
 //    /**
 //     * @return UserEvent[] Returns an array of UserEvent objects
 //     */
