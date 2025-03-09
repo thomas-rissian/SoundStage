@@ -17,7 +17,7 @@ security:
             lazy: true
             provider: app_user_provider
             form_login:
-                login_path: app_login
+                login_path: app_default
                 check_path: app_login
                 enable_csrf: true
             logout:
@@ -36,6 +36,7 @@ security:
     access_control:
         - { path: ^/api, roles: PUBLIC_ACCESS }
         - { path: ^/login, roles: PUBLIC_ACCESS }
+        - { path: ^/register, roles: PUBLIC_ACCESS }
         - { path: ^/$, roles: PUBLIC_ACCESS  }
         - { path: ^/admin, roles: ROLE_ADMIN }
         - { path: ^/, roles: ROLE_USER }
