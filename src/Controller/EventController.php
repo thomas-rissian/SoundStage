@@ -21,7 +21,7 @@ final class EventController extends AbstractController{
         ]);
     }
     #[Route('/event/create', name: 'app_event_create', methods: ['GET', 'POST'])]
-    public function createArtist(Request $request,EntityManagerInterface $entityManager): Response
+    public function createEvent(Request $request,EntityManagerInterface $entityManager): Response
     {
         $event = new Event();
 
@@ -41,7 +41,7 @@ final class EventController extends AbstractController{
         ]);
     }
     #[Route('/event/{id}/edit', name: 'app_event_edit', methods: ['GET', 'POST'])]
-    public function editArtist(Request $request,EntityManagerInterface $entityManager, int $id): Response
+    public function editEvent(Request $request,EntityManagerInterface $entityManager, int $id): Response
     {
         $event = $entityManager->getRepository(Event::class)->find($id);
         if($event === null){
