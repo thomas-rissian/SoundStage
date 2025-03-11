@@ -42,6 +42,29 @@ final class ArtistController extends AbstractController{
             'form' => $form->createView(),
         ]);
     }
+    #[Route('/artist/search', name: 'app_artist_show', methods: ['GET'])]
+    public function searchArtist(Request $request,EntityManagerInterface $entityManager): Response
+    {
+        $name = $request->query->get('name');
+        $artists = [];
+        if(!$name)
+            $name = "";
+        $artists = $entityManager->getRepository(Artist::class)->findByName($name);
+        return $this->render('artist/index.html.twig', [
+            "artists" => $artists,
+        ]);
+    }
+    #[Route('/artist/{id}', name: 'app_artist_one', methods: ['GET'])]
+    public function getArtiste(EntityManagerInterface $entityManager, int $id): Response
+    {
+        $artist = $entityManager->getRepository(Artist::class)->find($id);
+        if($artist === null){
+            return $this->redirectToRoute('app_artist_all');
+        }
+        return $this->render('artist/artist.html.twig', [
+            'artist' => $artist,
+        ]);
+    }
     #[Route('/artist/{id}/edit', name: 'app_artist_edit', methods: ['GET', 'POST'])]
     #[IsGranted('ROLE_ADMIN')]
     public function editArtist(Request $request,EntityManagerInterface $entityManager, int $id): Response
@@ -62,17 +85,6 @@ final class ArtistController extends AbstractController{
 
         return $this->render('artist/edit.html.twig', [
             'form' => $form->createView(),
-        ]);
-    }
-    #[Route('/artist/{id}', name: 'app_artist_one', methods: ['GET'])]
-    public function getArtiste(EntityManagerInterface $entityManager, int $id): Response
-    {
-        $artist = $entityManager->getRepository(Artist::class)->find($id);
-        if($artist === null){
-            return $this->redirectToRoute('app_artist_all');
-        }
-        return $this->render('artist/artist.html.twig', [
-            'artist' => $artist,
         ]);
     }
     #[Route('/artist/{id}/delete', name: 'app_artist_delete', methods: ['GET'])]

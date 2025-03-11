@@ -40,6 +40,18 @@ final class EventController extends AbstractController{
             'form' => $form->createView(),
         ]);
     }
+    #[Route('/event/search', name: 'app_event_search', methods: ['GET', 'POST'])]
+
+    public function searchEvent(Request $request,EntityManagerInterface $entityManager): Response
+    {
+        $date = $request->get('date');
+        if(!$date)
+            $date = "";
+
+        $events = $entityManager->getRepository(Event::class)->findByDate($date);
+
+        return $this->render('event/index.html.twig', ['events' => $events,'date'=>$date]);
+    }
     #[Route('/event/{id}/edit', name: 'app_event_edit', methods: ['GET', 'POST'])]
     public function editEvent(Request $request,EntityManagerInterface $entityManager, int $id): Response
     {

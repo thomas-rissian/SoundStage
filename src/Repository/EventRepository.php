@@ -16,6 +16,14 @@ class EventRepository extends ServiceEntityRepository
         parent::__construct($registry, Event::class);
     }
 
+    public function findByDate(string $date):array
+    {
+        return $this->createQueryBuilder('e')
+            ->where('e.date Like :date')
+            ->setParameter('date','%'. $date.'%')
+            ->getQuery()
+            ->getResult();
+    }
 //    /**
 //     * @return Event[] Returns an array of Event objects
 //     */
