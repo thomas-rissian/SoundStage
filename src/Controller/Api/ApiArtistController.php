@@ -16,12 +16,15 @@ final class ApiArtistController extends AbstractController
     #[Route('/api/artist', name: 'app_api_get_all_artist', methods: ['GET'])]
     #[OA\Get(
         path: '/api/artist',
-    )]
+    )]  
     public function getAllArtist(EntityManagerInterface $entityManage, SerializerInterface $serializer): JsonResponse
     {
         $artists = $entityManage->getRepository(Artist::class)->findAll();
 
-        return JsonResponse::fromJsonString($serializer->serialize($artists, 'json'));
+        return JsonResponse::fromJsonString($serializer->serialize($artists, 'json', [
+            'groups' => ['artist:read']
+        ]));
+
     }
 
     #[Route('/api/artist/{id}', name: 'app_api_get_artist', methods: ['GET'])]
@@ -32,6 +35,8 @@ final class ApiArtistController extends AbstractController
     {
         $artist = $entityManage->getRepository(Artist::class)->find($id);
 
-        return JsonResponse::fromJsonString($serializer->serialize($artist, 'json'));
+        return JsonResponse::fromJsonString($serializer->serialize($artist, 'json', [
+            'groups' => ['artist:read']
+        ]));
     }
 }

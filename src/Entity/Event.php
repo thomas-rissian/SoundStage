@@ -8,35 +8,34 @@ use Doctrine\Common\Collections\Collection;
 use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\EntityManager;
 use Doctrine\ORM\Mapping as ORM;
+use Symfony\Component\Serializer\Annotation\Groups;
 
 #[ORM\Entity(repositoryClass: EventRepository::class)]
 class Event
 {
+
     #[ORM\Id]
     #[ORM\GeneratedValue]
     #[ORM\Column]
+    #[Groups(['event:read','artist:read'])]
     private ?int $id = null;
-
+    #[Groups(['event:read'])]
     #[ORM\Column(length: 255)]
     private ?string $name = null;
-
+    #[Groups(['event:read'])]
     #[ORM\Column(type: Types::DATE_MUTABLE)]
     private ?\DateTimeInterface $date = null;
-
+    #[Groups(['event:read'])]
     #[ORM\ManyToOne(inversedBy: 'events')]
     #[ORM\JoinColumn(nullable: false)]
     private ?Artist $artist = null;
-
-    /**
-     * @var Collection<int, UserEvent>
-     */
-    #[ORM\OneToMany(targetEntity: UserEvent::class, mappedBy: 'event' , cascade: ['persist', 'remove'])]
+    #[Groups(['event:read'])]
+    #[ORM\OneToMany(targetEntity: UserEvent::class, mappedBy: 'event', cascade: ['persist', 'remove'])]
     private Collection $userEvents;
 
     #[ORM\ManyToOne(inversedBy: 'events')]
     #[ORM\JoinColumn(nullable: false)]
     private ?User $createdBy = null;
-
     public function __construct()
     {
         $this->userEvents = new ArrayCollection();

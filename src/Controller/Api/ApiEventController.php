@@ -6,28 +6,44 @@ use App\Entity\Event;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\JsonResponse;
-use Symfony\Component\Routing\Attribute\Route;
-use OpenApi\Attributes as OA;
+use Symfony\Component\HttpFoundation\Response;
+use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Component\Serializer\SerializerInterface;
 
-final class ApiEventController extends AbstractController{
-    #[Route('/api/event', name: 'api_get_all_event', methods: ['GET']),]
-    #[OA\Get(
-        path: '/api/event',
-    )]
-    public function getAllEvent(EntityManagerInterface $entityManage, SerializerInterface $serializer): JsonResponse
+
+final class ApiEventController extends AbstractController
+{
+    #[Route('/api/event', name: 'api_get_all_event', methods: ['GET'])]
+    public function getAllEvent(EntityManagerInterface $entityManager, SerializerInterface $serializer): JsonResponse
     {
-        $events = $entityManage->getRepository(Event::class)->findAll();
-        return JsonResponse::fromJsonString($serializer->serialize($events, 'json'));
+        $events = $entityManager->getRepository(Event::class)->findAll();
+
+        $jsonContent = $serializer->serialize($events, 'json', [
+            'groups' => ['event:read'],
+            'circular_reference_handler' => function ($object) {
+                return $object instanceof Event ? $object->getId() : null;
+            },
+        ]);
+
+        return new JsonResponse($jsonContent, Response::HTTP_OK, [], true);
     }
 
-    #[Route('/api/event/{id}', name: 'api_event', methods: ['GET']),]
-    #[OA\Get(
-        path: '/api/event/{id}',
-    )]
-    public function getEvent(EntityManagerInterface $entityManage, SerializerInterface $serializer, $id): JsonResponse
+    #[Route('/api/event/{id}', name: 'api_event', methods: ['GET'])]
+    public function getEvent(EntityManagerInterface $entityManager, SerializerInterface $serializer, $id): JsonResponse
     {
-        $event = $entityManage->getRepository(Event::class)->find($id);
-        return JsonResponse::fromJsonString($serializer->serialize($event, 'json'));
+        $event = $entityManager->getRepository(Event::class)->find($id);
+
+        if (!$event) {
+            return new JsonResponse(['error' => 'Event not found'], Response::HTTP_NOT_FOUND);
+        }
+
+        $jsonContent = $serializer->serialize($event, 'json', [
+            'groups' => ['event:read'],
+            'circular_reference_handler' => function ($object) {
+                return $object instanceof Event ? $object->getId() : null;
+            },
+        ]);
+
+        return new JsonResponse($jsonContent, Response::HTTP_OK, [], true);
     }
 }
