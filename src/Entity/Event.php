@@ -8,7 +8,9 @@ use Doctrine\Common\Collections\Collection;
 use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\EntityManager;
 use Doctrine\ORM\Mapping as ORM;
+use Symfony\Component\Serializer\Annotation\Context;
 use Symfony\Component\Serializer\Annotation\Groups;
+use Symfony\Component\Serializer\Normalizer\DateTimeNormalizer;
 
 #[ORM\Entity(repositoryClass: EventRepository::class)]
 class Event
@@ -24,6 +26,7 @@ class Event
     private ?string $name = null;
     #[Groups(['event:read'])]
     #[ORM\Column(type: Types::DATE_MUTABLE)]
+    #[Context([DateTimeNormalizer::FORMAT_KEY => 'Y-m-d'])]
     private ?\DateTimeInterface $date = null;
     #[Groups(['event:read'])]
     #[ORM\ManyToOne(inversedBy: 'events')]

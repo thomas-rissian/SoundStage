@@ -14,15 +14,16 @@ class UserEvent
 {
     #[ORM\ManyToOne(inversedBy: 'userEvents')]
     #[ORM\JoinColumn(nullable: false)]
+    #[Groups(['event:read'])]
     private ?User $userRef = null;
     #[ORM\ManyToOne(inversedBy: 'userEvents')]
     #[ORM\JoinColumn(nullable: false)]
+    #[Groups(['event:read'])]
     private ?Event $event = null;
 
     #[ORM\Id]
     #[ORM\GeneratedValue]
     #[ORM\Column(type: 'integer')]
-    #[Groups(['event:read'])]
     private ?int $id = null;
 
     public function getUserRef(): ?User
