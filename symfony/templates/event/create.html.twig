@@ -1,0 +1,28 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Créer un événement{% endblock %}
+
+{% block body %}
+    <h1>Créer un nouvel événement</h1>
+
+    {{ form_start(form) }}
+    <div>
+        {{ form_label(form.name, 'Nom de l\'événement') }}
+        {{ form_widget(form.name, { 'attr': {'class': 'form-control'} }) }}
+        {{ form_errors(form.name) }}
+    </div>
+
+    <div>
+        {{ form_label(form.date, 'Date de l\'événement') }}
+        {{ form_widget(form.date, { 'attr': {'class': 'form-control'} }) }}
+        {{ form_errors(form.date) }}
+    </div>
+
+    <div>
+        {{ form_label(form.artist, 'Artiste') }}
+        {{ form_widget(form.artist, { 'attr': {'class': 'form-control'} }) }}
+        {{ form_errors(form.artist) }}
+    </div>
+    <button type="submit" class="btn btn-primary">Créer</button>
+    {{ form_end(form) }}
+{% endblock %}
