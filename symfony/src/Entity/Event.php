@@ -21,10 +21,10 @@ class Event
     #[ORM\Column]
     #[Groups(['event:read','artist:read'])]
     private ?int $id = null;
-    #[Groups(['event:read'])]
+    #[Groups(['event:read','artist:read'])]
     #[ORM\Column(length: 255)]
     private ?string $name = null;
-    #[Groups(['event:read'])]
+    #[Groups(['event:read','artist:read'])]
     #[ORM\Column(type: Types::DATE_MUTABLE)]
     #[Context([DateTimeNormalizer::FORMAT_KEY => 'Y-m-d'])]
     private ?\DateTimeInterface $date = null;

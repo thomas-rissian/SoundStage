@@ -8,9 +8,14 @@ import {NotFound} from "./pages/extra/NotFound.jsx";
 
 function App() {
     return (
-        <div className="bg-red-500 text-white p-4">
-            Si Tailwind fonctionne, ce texte doit être sur fond rouge.
-        </div>
+        <Routes>
+            <Route path="/" element={<div>Home Page</div>} />
+            <Route path="/artist" element={<AllArtist />} />
+            <Route path="/artist/:id" element={<ArtistById />} />
+            <Route path="/event" element={<AllEvents />} />
+            <Route path="/event/:id" element={<EventById />} />
+            <Route path="*" element={<NotFound />} />
+        </Routes>
     );
 }
 
