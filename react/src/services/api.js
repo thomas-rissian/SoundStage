@@ -7,7 +7,7 @@ export async function getAllEvents() {
     return response.json();
 }
 export async function getEventById(id) {
-    const response = await fetch(`${API_URL}/event/`+id);
+    const response = await fetch(`${API_URL}/event/${id}`);
     return response.json();
 }
 
@@ -16,6 +16,6 @@ export async function getAllArtist() {
     return response.json();
 }
 export async function getArtistById(id) {
-    const response = await fetch(`${API_URL}/artist/`+id);
+    const response = await fetch(`${API_URL}/artist/${id}`);
     return response.json();
 }

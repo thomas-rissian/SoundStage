@@ -20,10 +20,12 @@ a {
 
 a:hover {
   color: #ffeb3b;
+  text-decoration: underline;
+
 }
 
 h1, h2 {
-  font-size: 3.2em;
+  font-size: 2.2em;
   line-height: 1.1;
   color: #ffffff;
 }
@@ -68,15 +70,37 @@ button:focus-visible {
   }
 }
 
-/* Style pour la page des artistes */
-.artist-page, .artist-detail-page, .event-page, .event-detail-page {
+.artist-page, .artist-detail-page, .event-page, .detail-page {
   margin: 0 auto;
   padding: 2rem;
   text-align: center;
   background-color: #242731;
   color: #ffffff;
 }
+.detail-page{
+  display: flex;
+  flex-direction: column;
+  height: 75vh;
+}
+.information-page{
+  text-align: left;
+  display: flex;
+  flex-direction: column;
+  width: 50%;
 
+}
+.list-element-right{
+  display: flex;
+  justify-content: center;
+  border : 3px solid #c8bb95;
+  border-radius: 5px;
+  padding: 0.5rem;
+  width: 40%;
+  margin-left: 10%;
+}
+.list-element{
+  text-align: left;
+}
 .artist-filter-section, .event-filter-section {
   margin-bottom: 1rem;
 }
@@ -104,7 +128,6 @@ button:focus-visible {
   border-radius: 8px;
   width: 60%;
   text-align: center;
-  box-shadow: 0px 4px 8px rgba(255, 255, 255, 0.1);
   word-wrap: break-word;
   overflow-wrap: break-word;
 }
@@ -142,7 +165,6 @@ button:focus-visible {
   background-color: #444;
 }
 
-/* Style pour les événements */
 .event-item {
   margin-bottom: 20px;
   padding: 15px;
@@ -176,7 +198,7 @@ button:focus-visible {
 .event-item ul {
   padding: 0;
   margin: 0;
-  list-style-type: none; /* Enlever les puces */
+  list-style-type: none;
 }
 
 .event-item ul li {
@@ -267,4 +289,13 @@ p {
   .artist-item, .event-item {
     width: 90%;
   }
+}
+
+
+footer{
+
+  position: absolute;
+  bottom: 0;
+  text-align: center;
+  width: 100%;
 }

@@ -1,7 +1,7 @@
 import { getEventById } from "../../services/api.js";
 import { useEffect, useState } from "react";
 import {Link, useParams} from "react-router-dom";
-import '/src/styles/App.css';
+import {Loading} from "../extra/loading.jsx";
 
 export function EventById() {
     const { id } = useParams();
@@ -22,45 +22,36 @@ export function EventById() {
     }, [id]);
 
     if (loading) {
-        return <p>Loading...</p>;
+        return <Loading />;
     }
-
+    if (event === null) {
+        return <div>Evènement inconnue</div>
+    }
     return (
-        <div className="event-detail-page">
-            <div className="event-info-container">
-                <div className="event-description-container">
-                    {/* Titre de l'événement */}
-                    <h1 className="event-name">{event.name}</h1>
-
-                    {/* Artiste associé */}
-                    {event.artist && (
-                        <div className="event-artist">
-                            <p><strong>Artist:</strong> <Link to= {`/artist/${event.artist.id}`}>{event.artist.name}</Link></p>
-                        </div>
-                    )}
-
-                    {/* Date de l'événement */}
-                    <div className="event-date">
-                        <p><strong>Date:</strong> {new Date(event.date).toLocaleDateString()}</p>
-                    </div>
-
+        <div className="detail-page">
+            <h2>{event.name}</h2>
+            <div style={{ display: "flex", flexDirection: "row" }}>
+                <div className="information-page">
+                    <h3><strong>Artiste :</strong> <Link to= {`/artist/${event.artist.id}`}>{event.artist.name}</Link></h3>
+                    <h3>Date : {event.date}</h3>
                 </div>
 
-                {/* Liste des utilisateurs inscrits */}
-                <div className="event-users-container">
+                <div className="list-element-right">
                     {event.userEvents && event.userEvents.length > 0 && (
-                        <div className="event-users">
-                            <h2>Users Registered</h2>
-                            <div className="users-list">
-                                {event.userEvents.map((userEvent, index) => (
-                                    <div key={index} className="event-user-item">
-                                        <p><strong>User:</strong> {userEvent.userRef.pseudo}</p>
-                                    </div>
+                        <div>
+                            <h3>Utilisateurs inscrits : {event.userEvents.length}</h3>
+                            <div className="list-element">
+                                {event.userEvents.map((userEvent) => (
+                                    <ul>
+                                        <li key={userEvent.userRef.id}>{userEvent.userRef.pseudo}</li>
+                                    </ul>
                                 ))}
                             </div>
                         </div>
                     )}
                 </div>
+
+                <div></div>
             </div>
         </div>
     );

@@ -1,6 +1,7 @@
 import { getAllEvents } from "../../services/api.js";
-import { useEffect, useState } from "react";
+import React, { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
+import {Loading} from "../extra/loading.jsx";
 
 export function AllEvents() {
     const [events, setEvents] = useState([]);
@@ -30,21 +31,18 @@ export function AllEvents() {
     const filterAndSortEvents = () => {
         let filtered = events;
 
-        // Filtrage par nom d'événement
         if (searchTerm) {
             filtered = filtered.filter(event =>
                 event.name.toLowerCase().includes(searchTerm.toLowerCase())
             );
         }
 
-        // Filtrage par artiste
         if (selectedArtist) {
             filtered = filtered.filter(event =>
                 event.artist.name.toLowerCase().includes(selectedArtist.toLowerCase())
             );
         }
 
-        // Filtrage par date
         if (selectedDate) {
             filtered = filtered.filter(event =>
                 new Date(event.date).toLocaleDateString() === new Date(selectedDate).toLocaleDateString()
@@ -55,16 +53,14 @@ export function AllEvents() {
     };
 
     if (loading) {
-        return <p>Loading...</p>;
+        return <Loading />;
     }
 
     return (
         <div className="event-page">
-            <h1>Événements</h1>
+            <h1>Évènements</h1>
 
-            {/* Filtres */}
             <div className="event-filter-section">
-                {/* Recherche par nom d'événement */}
                 <input
                     type="text"
                     placeholder="Rechercher un événement..."
@@ -73,7 +69,6 @@ export function AllEvents() {
                     className="event-search-input"
                 />
 
-                {/* Filtrer par artiste */}
                 <input
                     type="text"
                     placeholder="Filtrer par artiste..."
@@ -82,7 +77,6 @@ export function AllEvents() {
                     className="artist-search-input"
                 />
 
-                {/* Filtrer par date */}
                 <input
                     type="date"
                     value={selectedDate}
@@ -91,7 +85,6 @@ export function AllEvents() {
                 />
             </div>
 
-            {/* Liste des événements */}
             <div className="event-list">
                 {filteredEvents.map((event) => (
                     <div key={event.id} className="event-item">

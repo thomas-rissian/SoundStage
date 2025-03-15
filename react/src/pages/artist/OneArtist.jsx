@@ -1,7 +1,7 @@
 import { getArtistById } from "../../services/api.js";
-import { useEffect, useState } from "react";
-import { useParams, Link } from "react-router-dom";
-import '/src/styles/App.css';
+import React, { useEffect, useState } from "react";
+import {useParams, Link} from "react-router-dom";
+import {Loading} from "../extra/loading.jsx";
 
 export function ArtistById() {
     const { id } = useParams();
@@ -22,47 +22,36 @@ export function ArtistById() {
     }, [id]);
 
     if (loading) {
-        return <p>Loading...</p>;
+        return <Loading />;
     }
-
+    if (artist === null) {
+        return <div>Artiste inconnue</div>
+    }
     return (
-        <div className="artist-detail-page">
-            <div className="artist-info-container">
-                <div className="artist-description-container">
-                    <h1 className="artist-name">{artist.name}</h1>
-
-                    {/* Image de l'artiste */}
-                    {artist.image && (
-                        <div className="artist-image-container">
-                            <img src={artist.image} alt={artist.name} className="artist-image" />
-                        </div>
-                    )}
-
-                    {/* Description de l'artiste */}
-                    <div className="artist-description">
-                        <h2>Description</h2>
-                        <p>{artist.description}</p>
-                    </div>
+        <div className="detail-page">
+            <h2>{artist.name}</h2>
+            <div style={{ display: "flex", flexDirection: "row" }}>
+                <div className="information-page">
+                    <h3>Description : </h3>
+                    <p>{artist.description}</p>
                 </div>
 
-                {/* Événements à droite */}
-                <div className="artist-events-container">
+                <div className="list-element-right">
                     {artist.events && artist.events.length > 0 && (
-                        <div className="artist-events">
-                            <h2>Événements ({artist.events.length})</h2>
-                            <div className="events-list">
+                        <div>
+                            <h3>Evènement Créer ({artist.events.length})</h3>
+                            <div className="list-element">
                                 {artist.events.map((event) => (
-                                    <div key={event.id} className="artist-event-item">
-                                        <Link to={`/event/${event.id}`} className="event-link">
-                                            <p>{event.name}</p>
-                                        </Link>
-                                        <p>{new Date(event.date).toLocaleDateString()}</p>
-                                    </div>
+                                    <ul>
+                                        <li key={event.id}><Link to={`/event/${event.id}`}>{event.name}</Link> ({event.date}) </li>
+                                    </ul>
                                 ))}
                             </div>
                         </div>
                     )}
                 </div>
+
+                <div></div>
             </div>
         </div>
     );
