@@ -1,22 +1,33 @@
 # SoundStage
 
-créer env.local et faite la configuration nécessaire avec la bdd : 
+## Prérequis
 
-```
+Assurez-vous d'avoir **PHP**, **Symfony** et **Composer** préinstallés.
+
+## Configuration de l'environnement
+
+Créez un fichier `.env.local` en dupliquant le fichier `.env` existant, puis configurez la base de données.  
+Supprimez les lignes relatives à la base de données et ajoutez la ligne suivante :
+
+```ini
 DATABASE_URL="sqlite:///%kernel.project_dir%/var/data.db"
 ```
 
-Pour utiliser le projet : 
+## Installation du projet
+
+### Installer les dépendances
 
 ```shell
   composer install
 ```
 
+Si elles sont déjà installées, mettez-les à jour :
+
 ```shell
   composer update
 ```
 
-Création / migration bdd :
+### Création et migration de la base de données
 
 ```shell
   symfony console doctrine:database:create
@@ -27,23 +38,23 @@ Création / migration bdd :
 ```shell
   symfony console doctrine:migrations:migrate
 ```
+## Lancer le serveur
 
-
-Création utilisateur bdd : 
-
-```
-id : generated
-email : email@test.f
-roles : ["ROLE_USER"] / ["ROLE_ADMIN"]
-password : hash
-```
-
-```shell
-  php bin/console security:hash-password
-```
-
-Démarrer serveur : 
+### Mode développement
 
 ```shell
   symfony serve
 ```
+
+### Mode production
+
+```shell
+  APP_ENV=prod symfony server:start
+```
+
+## Résolution des problèmes
+
+En cas de problème, videz le cache :
+
+```shell
+php bin/console cache:clear --env=prod
