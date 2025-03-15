@@ -1,0 +1,46 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Liste des Artistes{% endblock %}
+
+{% block body %}
+    <div class="example-wrapper">
+        <h1>Artistes :
+            {% if is_granted("ROLE_ADMIN") %}
+                <a href="{{ path('app_artist_create') }}" class="create-btn">
+                    <i class="fas fa-plus"></i> Ajouter un artiste
+                </a>
+            {% endif %}
+        </h1>
+
+        <!-- Formulaire de recherche -->
+        <div class="search-container">
+            <form action="{{ path('app_artist_show') }}" method="GET">
+                <div class="search-input-wrapper">
+                    <input type="text" name="name" placeholder="Rechercher un artiste..." class="search-input" value="{{ app.request.query.get('name') }}">
+                    <button type="submit" class="search-button">
+                        <i class="fas fa-search"></i>
+                    </button>
+                </div>
+            </form>
+        </div>
+
+        <ul>
+            {% for artist in artists %}
+                <li>
+                    <span class="check">✔</span>
+                    <a href="{{ path('app_artist_one', {id: artist.id}) }}" class="name">{{ artist.name }}</a>
+                    <div class="actions">
+                        {% if is_granted("ROLE_ADMIN") %}
+                            <a href="{{ path('app_artist_edit', {id: artist.id}) }}" class="edit">
+                                <i class="fas fa-edit"></i> Modifier
+                            </a>
+                            <a href="{{ path('app_artist_delete', {id: artist.id}) }}" class="delete">
+                                <i class="fas fa-trash"></i> Supprimer
+                            </a>
+                        {% endif %}
+                    </div>
+                </li>
+            {% endfor %}
+        </ul>
+    </div>
+{% endblock %}

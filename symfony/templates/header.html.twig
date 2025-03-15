@@ -1,0 +1,27 @@
+<header>
+    <nav>
+        <ul class="main-nav">
+            <li><a href="{{ path('app_default') }}">SoundStage</a></li>
+            <li><a href="{{ path('app_artist_all') }}">Artiste</a></li>
+            <li><a href="{{ path('app_event_all') }}">Evènement</a></li>
+
+            {% if app.user %}
+                {% if is_granted("ROLE_ADMIN") %}
+                    <li><a href="{{ path('app_admin') }}">Admin</a></li>
+                    <li><a href="{{ path('app_admin_user_all') }}">Utilisateurs</a></li>
+                {% else %}
+                    <li><a href="{{ path('app_user_events') }}">Mes évenements</a></li>
+                {% endif %}
+            {% endif %}
+        </ul>
+        <ul class="auth-nav">
+            {% if app.user %}
+                <li><a href="{{ path('app_user') }}">{{ app.user.pseudo }}</a></li>
+                <li><a href="{{ path('app_logout') }}"><i class="fas fa-sign-out-alt"></i>Déconnecter</a></li>
+            {% else %}
+                <li><a href="{{ path('app_login') }}">Connecter</a></li>
+                <li><a href="{{ path('app_register') }}">Enregistrer</a></li>
+            {% endif %}
+        </ul>
+    </nav>
+</header>

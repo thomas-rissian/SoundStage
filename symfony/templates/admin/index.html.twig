@@ -1,0 +1,34 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Panneau d'Administration{% endblock %}
+
+{% block body %}
+    <div class="example-wrapper">
+        <h1>Panneau d'Administration</h1>
+
+        <div class="admin-overview">
+            <h2>Fonctionnalités administratives</h2>
+            <p>En tant qu'administrateur, vous pouvez effectuer les opérations suivantes :</p>
+
+            <div class="admin-features">
+                <div class="feature">
+                    <h3>Gestion des utilisateurs</h3>
+                    <ul>
+                        <li>Consulter la liste complète des utilisateurs</li>
+                        <li>Modifier les informations des utilisateurs</li>
+                        <li>Mettre à jour les mots de passe</li>
+                        <li>Supprimer des comptes utilisateurs</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+
+        <nav class="admin-menu">
+            <h2>Menu d'administration</h2>
+            <ul>
+                <li><a href="{{ path('app_admin') }}">Tableau de bord</a></li>
+                <li><a href="{{ path('app_admin_user_all') }}">Gestion des utilisateurs</a></li>
+            </ul>
+        </nav>
+    </div>
+{% endblock %}

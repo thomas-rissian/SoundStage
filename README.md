@@ -1,35 +1,15 @@
-# SoundStage
+# Bienvenue sur SoundStage
 
-créer env.local et faite la configuration nécessaire avec la bdd : 
+## La plateforme d'événements musicaux
 
-``
-DATABASE_URL="sqlite:///%kernel.project_dir%/var/data.db"
-``
+Elle est divisée en deux parties :
+- Un site web fullstack reposant sur **Symfony**, avec une API accessible en GET.
+- Un site web développé avec **React**, récupérant les données depuis l'API.
 
-Pour utiliser le projet : 
+## Symfony
 
-``
-composer install  / composer update
-``
+Voir [symfony/README](symfony/README.md).
 
-Création / migration bdd :
+## React
 
-``
-symfony console doctrine:database:create
-``
-``
-symfony console make:migration
-``
-``
-symfony console doctrine:migrations:migrate
-``
-
-
-Création utilisateur bdd : 
-
-``
-id : generated
-email : email@test.f
-roles : ["ROLE_USER"] / ["ROLE_ADMIN"]
-password : hash
-``
+Voir [react/README](react/README.md).

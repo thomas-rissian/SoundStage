@@ -1,0 +1,79 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Listes des Événements{% endblock %}
+
+{% block body %}
+    <div class="example-wrapper">
+        <h1>Evènements :
+            <a href="{{ path('app_event_create') }}" class="create-btn">
+                <i class="fas fa-plus"></i>
+            </a>
+        </h1>
+
+        <!-- Formulaire de recherche d'événements -->
+        <div class="search-container">
+            <form action="{{ path('app_event_search') }}" method="GET">
+                <div class="search-row">
+                    <div class="date-input-wrapper">
+                        <label for="event-date">Date :</label>
+                        <input type="date" id="event-date" name="date"
+                               class="date-input" value="{{ app.request.query.get('date') }}">
+                    </div>
+                    <button type="submit" class="search-button">
+                        <i class="fas fa-search"></i> Rechercher
+                    </button>
+                </div>
+            </form>
+        </div>
+
+        <ul>
+            {% for event in events %}
+                {% if event.isRegister(app.user) %}
+                    <li class="registered">
+                        <span class="check">✔</span> |
+                        <a href="{{ path('app_event_one', {id: event.id}) }}" class="name">{{ event.name }}</a>
+                        <div class="actions">
+                            {% if event.getCreatedBy() == app.user or is_granted("ROLE_ADMIN") %}
+                                <a href="{{ path('app_event_edit', {id: event.id}) }}" class="edit">
+                                    <i class="fas fa-edit"></i> Modifier
+                                </a>
+                                <a href="{{ path('app_event_delete', {id: event.id}) }}" class="delete">
+                                    <i class="fas fa-trash"></i> Supprimer
+                                </a>
+                            {% endif %}
+                            <a href="{{ path('app_event_register', {id: event.id}) }}">
+                                <i class="fas fa-sign-out-alt"></i> Se désinscrire
+                            </a>
+                        </div>
+                    </li>
+                {% endif %}
+            {% endfor %}
+        </ul>
+
+        <h2>Non inscrits</h2>
+        <ul>
+            {% for event in events %}
+                {% if not event.isRegister(app.user) %}
+                    <li class="not-registered">
+                        <span class="check">❌</span> |
+                        <a href="{{ path('app_event_one', {id: event.id}) }}" class="name">{{ event.name }}</a>
+
+                        <div class="actions">
+                            {% if event.getCreatedBy() == app.user or is_granted("ROLE_ADMIN") %}
+                                <a href="{{ path('app_event_edit', {id: event.id}) }}" class="edit">
+                                    <i class="fas fa-edit"></i> Modifier
+                                </a>
+                                <a href="{{ path('app_event_delete', {id: event.id}) }}" class="delete">
+                                    <i class="fas fa-trash"></i> Supprimer
+                                </a>
+                            {% endif %}
+                            <a href="{{ path('app_event_register', {id: event.id}) }}">
+                                <i class="fas fa-sign-in-alt"></i> S'inscrire
+                            </a>
+                        </div>
+                    </li>
+                {% endif %}
+            {% endfor %}
+        </ul>
+    </div>
+{% endblock %}

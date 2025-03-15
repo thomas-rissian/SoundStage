@@ -1,0 +1,20 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Accueil - MusicEvent{% endblock %}
+
+{% block body %}
+    <div class="example-wrapper">
+        <h1>Bienvenue sur SoundStage</h1>
+
+        <div class="home-banner" style="background-color: var(--secondary-color); padding: 30px; border-radius: 10px; margin-bottom: 30px; text-align: center; box-shadow: 0 6px 14px rgba(0, 0, 0, 0.18);">
+            <h2>Découvrez des artistes et événements musicaux près de chez vous</h2>
+            <p style="margin-bottom: 20px;">Trouvez vos concerts préférés et restez informé des derniers événements musicaux</p>
+            <div style="display: flex; justify-content: center; gap: 20px;">
+                <a href="{{ path('app_artist_all') }}" class="btn-primary">Voir les artistes</a>
+                <a href="{{ path('app_event_all') }}" class="btn-primary">Découvrir les événements</a>
+            </div>
+        </div>
+
+
+    </div>
+{% endblock %}

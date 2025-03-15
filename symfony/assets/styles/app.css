@@ -1,0 +1,535 @@
+/* Variables de couleurs */
+:root {
+    --bg-color: #2c3e50;
+    --text-color: #ecf0f1;
+    --primary-color: #f39c12;
+    --secondary-color: #34495e;
+    --hover-color: #e67e22;
+    --accent-color: #3498db;
+    --error-color: #e74c3c;
+    --success-color: #2ecc71;
+    --border-color: #2c3e50;
+    --input-background: #34495e;
+}
+
+/* Style Global */
+body {
+    background-color: var(--bg-color);
+    color: var(--text-color);
+    font-family: 'Arial', sans-serif;
+    margin: 0;
+    padding: 0;
+}
+
+/* En-tête */
+header {
+    background-color: var(--secondary-color);
+    padding: 1rem;
+    text-align: center;
+    margin-bottom: 2rem; /* Ajoute de l'espace sous la nav bar */
+}
+
+/* Navigation - nouvelle structure */
+header nav {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    position: relative;
+    width: 100%;
+}
+
+header nav .main-nav {
+    display: flex;
+    list-style-type: none;
+    padding: 0;
+    margin: 0;
+    justify-content: center;
+}
+
+header nav .auth-nav {
+    display: flex;
+    list-style-type: none;
+    padding: 0;
+    margin: 0;
+    position: absolute;
+    right: 0;
+}
+
+header nav ul li {
+    margin: 0 15px;
+}
+
+header nav ul li a {
+    color: var(--text-color);
+    text-decoration: none;
+    font-size: 16px;
+    display: flex;
+    align-items: center;
+}
+
+header nav ul li a:hover {
+    color: var(--primary-color);
+    text-decoration: underline;
+}
+
+/* Wrapper des événements et détails */
+.example-wrapper, .detail-wrapper, .detail-page, .form-container, .user-list-container {
+    margin: 3em auto; /* Augmenté la marge pour plus d'espace */
+    max-width: 900px;
+    width: 95%;
+    font: 18px/1.5 sans-serif;
+}
+
+/* Titres */
+h1, h2 {
+    color: var(--primary-color);
+    text-align: center;
+    margin-bottom: 20px;
+}
+
+h1 {
+    font-size: 28px;
+}
+
+h2 {
+    text-align: left;
+    font-size: 24px;
+}
+
+/* Liens */
+a {
+    color: var(--text-color);
+    text-decoration: none;
+    transition: color 0.3s ease;
+}
+
+a:hover {
+    color: var(--primary-color);
+}
+
+/* Boutons */
+button, .create, .create-btn, .btn-primary, .actions a, .example-wrapper h1 a, .detail-wrapper .actions a {
+    background-color: var(--accent-color);
+    color: #fff;
+    padding: 8px 16px;
+    border-radius: 5px;
+    font-size: 16px;
+    text-decoration: none;
+    transition: background-color 0.3s ease;
+    border: none;
+    cursor: pointer;
+}
+
+button:hover, .create:hover, .create-btn:hover, .btn-primary:hover, .actions a:hover, .example-wrapper h1 a:hover, .detail-wrapper .actions a:hover {
+    background-color: var(--hover-color);
+}
+
+/* Boutons spécifiques */
+.actions .edit-btn {
+    background-color: var(--accent-color);
+}
+
+.actions .edit-btn:hover {
+    background-color: #2980b9;
+}
+
+.actions .delete-btn {
+    background-color: var(--error-color);
+}
+
+.actions .delete-btn:hover {
+    background-color: #c0392b;
+}
+
+/* Listes */
+ul {
+    list-style-type: none;
+    padding-left: 0;
+}
+
+li {
+    background-color: var(--secondary-color);
+    padding: 15px;
+    margin-bottom: 10px;
+    border-radius: 5px;
+    transition: background-color 0.3s ease;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+}
+
+/* Exception pour les éléments de navigation */
+header nav ul li {
+    background-color: transparent;
+    padding: 0;
+    margin-bottom: 0;
+    border-radius: 0;
+}
+
+/* Alignement du nom à gauche */
+li .name {
+    text-align: left;
+    flex-grow: 1; /* Prend tout l'espace disponible */
+}
+
+/* Alignement des actions (modifier, supprimer, inscrire) */
+li .actions {
+    display: flex;
+    gap: 10px; /* Espace entre les boutons */
+    align-items: center;
+}
+
+/* Images */
+.image-container img, .artist-image {
+    width: 100%;
+    max-width: 300px;
+    border: 5px solid var(--secondary-color);
+    border-radius: 8px;
+    display: block;
+    margin: 0 auto;
+}
+
+/* Formulaires */
+.form-container {
+    width: 100%;
+    max-width: 500px;
+    margin: 3em auto; /* Plus d'espace au-dessus */
+    padding: 25px;
+    background-color: var(--secondary-color);
+    border-radius: 10px;
+    box-shadow: 0 8px 16px rgba(0, 0, 0, 0.2); /* Ombre plus prononcée */
+    color: var(--text-color);
+}
+
+.form-group {
+    margin-bottom: 15px;
+}
+
+.form-label {
+    font-weight: bold;
+    color: var(--text-color);
+}
+
+.form-control {
+    width: 100%;
+    padding: 12px;
+    margin-top: 5px;
+    border-radius: 5px;
+    border: 1px solid var(--border-color);
+    background-color: var(--input-background);
+    font-size: 14px;
+    color: var(--text-color);
+}
+
+.form-control:focus {
+    border-color: var(--primary-color);
+    box-shadow: 0 0 5px rgba(243, 156, 18, 0.5);
+}
+
+.form-control:invalid {
+    border-color: var(--error-color);
+}
+
+.form-errors {
+    color: var(--error-color);
+    font-size: 12px;
+    margin-top: 5px;
+}
+
+/* Icônes */
+.fas {
+    font-size: 18px;
+    margin-right: 5px;
+}
+
+/* Coche pour l'état d'inscription */
+.check {
+    font-size: 24px;
+    margin-left: 10px;
+}
+
+.check.not-registered {
+    color: var(--error-color);
+}
+
+.check.registered {
+    color: var(--success-color);
+}
+
+/* Détails en deux colonnes (gauche et droite) */
+.detail-wrapper, .detail-page {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 20px; /* Espace entre les colonnes */
+}
+
+.detail-wrapper .left-info, .detail-page .left-column {
+    flex: 1;
+    max-width: 50%;
+    min-width: 300px;
+    padding: 20px;
+    background-color: var(--secondary-color);
+    border-radius: 8px;
+    overflow-wrap: break-word;
+    word-wrap: break-word;
+    hyphens: auto;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+}
+
+.detail-wrapper .right-info, .detail-page .right-column {
+    flex: 1;
+    padding: 20px;
+    background-color: var(--secondary-color);
+    border-radius: 8px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+}
+
+/* Style amélioré pour les détails de la colonne de droite */
+.detail-wrapper .right-info ul, .detail-page .right-column ul {
+    margin: 0;
+    padding: 0;
+}
+
+.detail-wrapper .right-info li, .detail-page .right-column li {
+    background-color: rgba(52, 73, 94, 0.7); /* Plus léger que le fond principal */
+    margin-bottom: 12px;
+    padding: 15px;
+    border-radius: 8px;
+    border-left: 3px solid var(--primary-color);
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.detail-wrapper .right-info li:hover, .detail-page .right-column li:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+}
+
+/* Infos dans la colonne de droite */
+.detail-wrapper .right-info p, .detail-page .right-column p {
+    background-color: rgba(52, 73, 94, 0.7);
+    padding: 15px;
+    border-radius: 8px;
+    border-left: 3px solid var(--accent-color);
+    margin: 10px 0;
+}
+
+/* User List */
+.user-list-container {
+    max-width: 800px;
+    padding: 25px;
+    border-radius: 10px;
+    background-color: var(--secondary-color);
+    box-shadow: 0 6px 14px rgba(0, 0, 0, 0.18);
+    margin-top: 3em; /* Plus d'espace en haut */
+}
+
+.user-item {
+    margin-bottom: 10px;
+}
+
+.user-link {
+    color: var(--primary-color);
+    font-size: 16px;
+    text-decoration: none;
+    padding: 12px 15px;
+    border-radius: 5px;
+    display: inline-block;
+    width: 100%;
+    background-color: rgba(52, 73, 94, 0.7);
+    transition: background-color 0.3s ease, color 0.3s ease, transform 0.2s ease;
+    border-left: 3px solid var(--primary-color);
+}
+
+.user-link:hover {
+    background-color: var(--accent-color);
+    color: var(--text-color);
+    transform: translateX(5px);
+}
+
+/* Styles pour la recherche */
+.search-container {
+    margin-bottom: 20px;
+    background-color: var(--secondary-color);
+    padding: 15px;
+    border-radius: 8px;
+}
+
+.search-row {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.search-input-wrapper {
+    flex-grow: 1;
+    display: flex;
+    align-items: center;
+}
+
+.search-input {
+    width: 100%;
+    padding: 10px;
+    border-radius: 5px;
+    border: 1px solid var(--border-color);
+    background-color: var(--input-background);
+    color: var(--text-color);
+}
+
+.date-input-wrapper {
+    display: flex;
+    align-items: center;
+    gap: 5px;
+}
+
+.date-input {
+    padding: 10px;
+    border-radius: 5px;
+    border: 1px solid var(--border-color);
+    background-color: var(--input-background);
+    color: var(--text-color);
+}
+
+.search-button {
+    display: flex;
+    align-items: center;
+    gap: 5px;
+    background-color: var(--accent-color);
+    color: white;
+    border: none;
+    padding: 10px 15px;
+    border-radius: 5px;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+}
+
+.search-button:hover {
+    background-color: var(--hover-color);
+}
+
+/* Style pour les champs de recherche en ligne */
+.search-input-container {
+    display: flex;
+    align-items: center;
+    width: 100%;
+}
+
+.search-input-container input {
+    flex-grow: 1;
+    border-top-right-radius: 0;
+    border-bottom-right-radius: 0;
+    margin-right: 0;
+}
+
+.search-input-container button {
+    border-top-left-radius: 0;
+    border-bottom-left-radius: 0;
+    padding: 10px 15px;
+    height: 100%;
+}
+/* Style pour le conteneur de profil utilisateur */
+.user-profile-container {
+    margin: 2em auto;
+    max-width: 800px;
+}
+
+.user-profile-card {
+    background-color: var(--secondary-color);
+    border-radius: 10px;
+    padding: 25px;
+    box-shadow: 0 8px 16px rgba(0, 0, 0, 0.2);
+    display: flex;
+    flex-direction: column;
+    gap: 25px;
+}
+
+.user-profile-info {
+    padding-bottom: 20px;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.user-profile-info h2 {
+    color: var(--primary-color);
+    margin-top: 0;
+    margin-bottom: 20px;
+    font-size: 22px;
+    border-left: 4px solid var(--primary-color);
+    padding-left: 10px;
+}
+
+.info-row {
+    display: flex;
+    margin-bottom: 15px;
+    padding: 10px;
+    background-color: rgba(44, 62, 80, 0.5);
+    border-radius: 6px;
+    transition: background-color 0.3s ease;
+}
+
+.info-row:hover {
+    background-color: rgba(44, 62, 80, 0.8);
+}
+
+.info-label {
+    font-weight: bold;
+    width: 180px;
+    color: var(--accent-color);
+    padding-right: 15px;
+}
+
+.info-value {
+    flex: 1;
+    word-break: break-word;
+}
+
+.user-profile-actions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 15px;
+    justify-content: center;
+}
+
+.user-profile-actions a {
+    min-width: 180px;
+    text-align: center;
+    margin-bottom: 10px;
+    transition: transform 0.2s ease;
+}
+
+.user-profile-actions a:hover {
+    transform: translateY(-3px);
+}
+
+.user-profile-actions .delete-btn {
+    background-color: var(--error-color);
+    color: white;
+    padding: 8px 16px;
+    border-radius: 5px;
+    font-size: 16px;
+    text-decoration: none;
+    transition: background-color 0.3s ease;
+}
+
+.user-profile-actions .delete-btn:hover {
+    background-color: #c0392b;
+}
+
+/* Responsive pour petits écrans */
+@media (max-width: 600px) {
+    .info-row {
+        flex-direction: column;
+    }
+
+    .info-label {
+        width: 100%;
+        margin-bottom: 5px;
+    }
+
+    .user-profile-actions {
+        flex-direction: column;
+    }
+
+    .user-profile-actions a {
+        width: 100%;
+    }
+}

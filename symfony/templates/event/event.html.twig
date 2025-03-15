@@ -1,0 +1,23 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}{{ event.name }}{% endblock %}
+
+{% block body %}
+    <div class="detail-page">
+        <div class="left-column">
+            <h1>{{ event.name }}</h1>
+            <p class="description">Date : {{ event.date.format("d/m/Y") }}</p>
+            <p class="description">Créateur : <a href="{{ path('app_artist_one', {id: event.artist.id}) }}">
+                    {{ event.artist.name }}</a></p>
+        </div>
+        <div class="right-column">
+            <h2>Participants</h2>
+            <p>Nombre total d'utilisateurs inscrits : {{ event.userEvents|length }}</p>
+            <ul>
+                {% for userEvent in event.userEvents %}
+                    <li>{{ userEvent.userRef.pseudo }}</li>
+                {% endfor %}
+            </ul>
+        </div>
+    </div>
+{% endblock %}
