@@ -38,10 +38,11 @@ final class EventController extends AbstractController{
 
         return $this->render('event/create.html.twig', [
             'form' => $form->createView(),
+            'title' => "Création",
+            "ButtonName" => "Créer",
         ]);
     }
     #[Route('/event/search', name: 'app_event_search', methods: ['GET', 'POST'])]
-
     public function searchEvent(Request $request,EntityManagerInterface $entityManager): Response
     {
         $date = $request->get('date');
@@ -70,8 +71,10 @@ final class EventController extends AbstractController{
                 return $this->redirectToRoute('app_event_all');
 
             }
-            return $this->render('event/edit.html.twig', [
+            return $this->render('event/create.html.twig', [
                 'form' => $form->createView(),
+                'title' => "Modification",
+                "ButtonName" => "Modifier",
             ]);
         }else
             return $this->redirectToRoute('app_event_all');

@@ -26,3 +26,4 @@
 
 .idea/
 migrations/*
+public/uploads/*

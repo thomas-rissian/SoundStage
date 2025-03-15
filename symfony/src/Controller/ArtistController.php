@@ -6,6 +6,7 @@ use App\Entity\Artist;
 use App\Form\ArtistType;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
+use Symfony\Component\HttpFoundation\File\Exception\FileException;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Attribute\Route;
@@ -31,7 +32,23 @@ final class ArtistController extends AbstractController{
         $form = $this->createForm(ArtistType::class, $artist);
         $form->handleRequest($request);
         if($form->isSubmitted() && $form->isValid()){
+            $imageFile = $form->get('image')->getData();
+            if ($imageFile) {
+                $originalFilename = pathinfo($imageFile->getClientOriginalName(), PATHINFO_FILENAME);
+                $safeFilename = transliterator_transliterate('Any-Latin; Latin-ASCII; [^A-Za-z0-9_] remove; Lower()', $originalFilename);
+                $newFilename = $safeFilename.'-'.uniqid().'.'.$imageFile->guessExtension();
 
+                try {
+                    $imageFile->move(
+                        $this->getParameter('images_directory'),
+                        $newFilename
+                    );
+                } catch (FileException $e) {
+
+                }
+
+                $artist->setImage($newFilename);
+            }
             $entityManager->persist($artist);
             $entityManager->flush();
             return $this->redirectToRoute('app_artist_all');
@@ -40,6 +57,8 @@ final class ArtistController extends AbstractController{
 
         return $this->render('artist/create.html.twig', [
             'form' => $form->createView(),
+            'title' => "Création",
+            "ButtonName" => "Créer",
         ]);
     }
     #[Route('/artist/search', name: 'app_artist_show', methods: ['GET'])]
@@ -76,15 +95,33 @@ final class ArtistController extends AbstractController{
         $form = $this->createForm(ArtistType::class, $artist);
         $form->handleRequest($request);
         if($form->isSubmitted() && $form->isValid()){
+            $imageFile = $form->get('image')->getData();
+            if ($imageFile) {
+                $originalFilename = pathinfo($imageFile->getClientOriginalName(), PATHINFO_FILENAME);
+                $safeFilename = transliterator_transliterate('Any-Latin; Latin-ASCII; [^A-Za-z0-9_] remove; Lower()', $originalFilename);
+                $newFilename = $safeFilename.'-'.uniqid().'.'.$imageFile->guessExtension();
 
+                try {
+                    $imageFile->move(
+                        $this->getParameter('images_directory'),
+                        $newFilename
+                    );
+                } catch (FileException $e) {
+
+                }
+
+                $artist->setImage($newFilename);
+            }
             $entityManager->persist($artist);
             $entityManager->flush();
             return $this->redirectToRoute('app_artist_all');
 
         }
 
-        return $this->render('artist/edit.html.twig', [
+        return $this->render('artist/create.html.twig', [
             'form' => $form->createView(),
+            'title' => "Modification",
+            "ButtonName" => "Modifier",
         ]);
     }
     #[Route('/artist/{id}/delete', name: 'app_artist_delete', methods: ['GET'])]

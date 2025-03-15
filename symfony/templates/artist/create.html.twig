@@ -1,13 +1,12 @@
-
 {% extends 'base.html.twig' %}
 
-{% block title %}Créatiion d'un Artiste{% endblock %}
+{% block title %}{{ title }} d'un Artiste{% endblock %}
 
 {% block body %}
     <div class="form-container">
-        <h1>Modifier un Artiste</h1>
+        <h1>{{ title }} d'un Artiste</h1>
 
-        {{ form_start(form) }}
+        {{ form_start(form, {'attr': {'enctype': 'multipart/form-data'}}) }}
         <div class="form-group">
             <label for="{{ form.name.vars.id }}" class="form-label">Nom de l'artiste</label>
             {{ form_widget(form.name, { 'attr': {'class': 'form-control'} }) }}
@@ -26,7 +25,7 @@
             {{ form_errors(form.image) }}
         </div>
 
-        <button type="submit" class="btn btn-primary">Créer</button>
+        <button type="submit" class="btn btn-primary">{{ ButtonName }}</button>
         {{ form_end(form) }}
     </div>
 {% endblock %}

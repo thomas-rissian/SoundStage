@@ -47,6 +47,14 @@ class SecurityController extends AbstractController
 
             // encode the plain password
             $user->setPassword($userPasswordHasher->hashPassword($user, $plainPassword));
+            $userCount = $entityManager
+                ->getRepository(User::class)
+                ->createQueryBuilder('u')
+                ->select('COUNT(u.id)')
+                ->getQuery()
+                ->getSingleScalarResult();
+            if($userCount === 0)
+                $user->setRoles(['ROLE_ADMIN']);
 
             $entityManager->persist($user);
             $entityManager->flush();

@@ -6,7 +6,7 @@
             <li><a href="{{ path('app_event_all') }}">Evènement</a></li>
 
             {% if app.user %}
-                {% if app.user.roles[0] == 'ROLE_ADMIN' %}
+                {% if is_granted("ROLE_ADMIN") %}
                     <li><a href="{{ path('app_admin') }}">Admin</a></li>
                     <li><a href="{{ path('app_admin_user_all') }}">Utilisateurs</a></li>
                 {% else %}
