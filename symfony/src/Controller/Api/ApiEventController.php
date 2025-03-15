@@ -32,7 +32,7 @@ final class ApiEventController extends AbstractController
     public function getEvent(EntityManagerInterface $entityManager, SerializerInterface $serializer, $id): JsonResponse
     {
         $event = $entityManager->getRepository(Event::class)->find($id);
-        
+
         $jsonContent = $serializer->serialize($event, 'json', [
             'groups' => ['event:read'],
             'circular_reference_handler' => function ($object) {

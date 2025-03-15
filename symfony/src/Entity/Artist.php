@@ -21,7 +21,7 @@ class Artist
     #[ORM\Column(length: 255)]
     #[Groups(['artist:read','event:read'])]
     private ?string $name = null;
-    #[Groups(['artist:read'])]
+
     #[ORM\Column(length: 255)]
     private ?string $image = null;
     #[Groups(['artist:read'])]

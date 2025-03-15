@@ -1,12 +1,36 @@
 {% extends 'base.html.twig' %}
 
+{% block title %}Mes événements{% endblock %}
+
 {% block body %}
-<div>
-    {% for userEvent in events %}
-        <a href="{{ path('app_event_one',{id : userEvent.event.id})}}">{{ userEvent.event.name }}</a>
-    {% endfor %}
-</div>
+        <div class="example-wrapper">
+                <h1>Mes événements :
+                        <a href="{{ path('app_event_create') }}" class="create-btn">
+                                <i class="fas fa-plus"></i>
+                        </a>
+                </h1>
+
+                <ul>
+                        {% for userEvent in events %}
+                                <li class="event-item">
+                                        <span class="check">✔</span> |
+                                        <a href="{{ path('app_event_one', {id: userEvent.event.id}) }}" class="name">{{ userEvent.event.name }}</a>
+
+                                        <div class="actions">
+                                                {% if userEvent.event.getCreatedBy() == app.user or app.user.roles() == "ROLE_ADMIN" %}
+                                                        <a href="{{ path('app_event_edit', {id: userEvent.event.id}) }}" class="edit">
+                                                                <i class="fas fa-pencil-alt"></i> Modifier
+                                                        </a>
+                                                        <a href="{{ path('app_event_delete', {id: userEvent.event.id}) }}" class="delete">
+                                                                <i class="fas fa-trash"></i> Supprimer
+                                                        </a>
+                                                {% endif %}
+                                                <a href="{{ path('app_event_register', {id: userEvent.event.id}) }}">
+                                                        <i class="fas fa-sign-out-alt"></i> Se désinscrire
+                                                </a>
+                                        </div>
+                                </li>
+                        {% endfor %}
+                </ul>
+        </div>
 {% endblock %}
-
-{% block title %}Mes évenements{% endblock %}
-

@@ -1,16 +1,22 @@
 {% extends 'base.html.twig' %}
 
+{% block title %}{{ artist.name }}{% endblock %}
+
 {% block body %}
-    <div>
-        <ul>
-            <li>{{ artist.name }}</li>
-            <li>{{ artist.description }}</li>
-            <li><img src="{{ artist.image }}"/></li>
-        </ul>
+    <div class="detail-page">
+        <div class="left-column">
+            <h1>{{ artist.name }}</h1>
+            <p class="description">{{ artist.description }}</p>
+            <img src="{{ artist.image }}" alt="{{ artist.name }}" class="artist-image" />
+        </div>
+        <div class="right-column">
+            <h2>Événements</h2>
+            <p>Nombre total d'événements : {{ artist.events|length }}</p>
+            <ul>
+                {% for event in artist.events %}
+                    <li><a href="{{ path('app_event_one', {id:  event.id}) }}">{{ event.name }}</a></li>
+                {% endfor %}
+            </ul>
+        </div>
     </div>
 {% endblock %}
-
-{% block title %}
-
-{% endblock %}
-

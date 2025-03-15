@@ -1,20 +1,20 @@
 {% extends 'base.html.twig' %}
 
-{% block title %}Hello DefaultController!{% endblock %}
+{% block title %}Accueil - MusicEvent{% endblock %}
 
 {% block body %}
-<style>
-    .example-wrapper { margin: 1em auto; max-width: 800px; width: 95%; font: 18px/1.5 sans-serif; }
-    .example-wrapper code { background: #F5F5F5; padding: 2px 6px; }
-</style>
+    <div class="example-wrapper">
+        <h1>Bienvenue sur SoundStage</h1>
 
-<div class="example-wrapper">
-    <h1>Hello {{ controller_name }}! ✅</h1>
+        <div class="home-banner" style="background-color: var(--secondary-color); padding: 30px; border-radius: 10px; margin-bottom: 30px; text-align: center; box-shadow: 0 6px 14px rgba(0, 0, 0, 0.18);">
+            <h2>Découvrez des artistes et événements musicaux près de chez vous</h2>
+            <p style="margin-bottom: 20px;">Trouvez vos concerts préférés et restez informé des derniers événements musicaux</p>
+            <div style="display: flex; justify-content: center; gap: 20px;">
+                <a href="{{ path('app_artist_all') }}" class="btn-primary">Voir les artistes</a>
+                <a href="{{ path('app_event_all') }}" class="btn-primary">Découvrir les événements</a>
+            </div>
+        </div>
 
-    This friendly message is coming from:
-    <ul>
-        <li>Your controller at <code>C:/Users/thomas/Documents/cours/dev web/symfony/SoundStage/src/Controller/DefaultController.php</code></li>
-        <li>Your template at <code>C:/Users/thomas/Documents/cours/dev web/symfony/SoundStage/templates/default/index.html.twig</code></li>
-    </ul>
-</div>
+
+    </div>
 {% endblock %}

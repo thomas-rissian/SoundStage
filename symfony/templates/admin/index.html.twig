@@ -1,20 +1,35 @@
 {% extends 'base.html.twig' %}
 
-{% block title %}Hello AdminController!{% endblock %}
+{% block title %}Panneau d'Administration{% endblock %}
 
 {% block body %}
-<style>
-    .example-wrapper { margin: 1em auto; max-width: 800px; width: 95%; font: 18px/1.5 sans-serif; }
-    .example-wrapper code { background: #F5F5F5; padding: 2px 6px; }
-</style>
+    <div class="example-wrapper">
+        <h1>Panneau d'Administration</h1>
 
-<div class="example-wrapper">
-    <h1>Hello {{ controller_name }}! ✅</h1>
+        <div class="admin-overview">
+            <h2>Fonctionnalités administratives</h2>
+            <p>En tant qu'administrateur, vous pouvez effectuer les opérations suivantes :</p>
 
-    This friendly message is coming from:
-    <ul>
-        <li>Your controller at <code>/home/thomas/Documents/projet/BUT2/web/SoundStage/src/Controller/AdminController.php</code></li>
-        <li>Your template at <code>/home/thomas/Documents/projet/BUT2/web/SoundStage/templates/admin/index.html.twig</code></li>
-    </ul>
-</div>
+            <div class="admin-features">
+                <div class="feature">
+                    <h3>Gestion des utilisateurs</h3>
+                    <ul>
+                        <li>Consulter la liste complète des utilisateurs</li>
+                        <li>Modifier les informations des utilisateurs</li>
+                        <li>Mettre à jour les mots de passe</li>
+                        <li>Supprimer des comptes utilisateurs</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+
+        <nav class="admin-menu">
+            <h2>Menu d'administration</h2>
+            <ul>
+                <li><a href="{{ path('app_admin') }}">Tableau de bord</a></li>
+                <li><a href="{{ path('app_admin_user_all') }}">Gestion des utilisateurs</a></li>
+                <!-- Vous pouvez ajouter d'autres sections à l'avenir -->
+            </ul>
+        </nav>
+    </div>
 {% endblock %}
