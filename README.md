@@ -8,8 +8,8 @@ Elle est divisée en deux parties :
 
 ## Symfony
 
-Voir [symfony/README](symfony/README).
+Voir [symfony/README](symfony/README.md).
 
 ## React
 
-Voir [react/README](react/README).
+Voir [react/README](react/README.md).
