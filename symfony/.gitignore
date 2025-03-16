@@ -27,3 +27,4 @@
 .idea/
 migrations/*
 public/uploads/*
+coverage/*
