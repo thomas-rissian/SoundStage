@@ -22,7 +22,7 @@ class UserTest extends TestCase
         $this->assertNull($this->user->getEmail());
         $this->assertNull($this->user->getPassword());
         $this->assertNull($this->user->getPseudo());
-        $this->assertEmpty($this->user->getRoles());
+        $this->assertCount(1,$this->user->getRoles());
         $this->assertContains('ROLE_USER', $this->user->getRoles());
         $this->assertInstanceOf(\Doctrine\Common\Collections\Collection::class, $this->user->getUserEvents());
         $this->assertCount(0, $this->user->getUserEvents());

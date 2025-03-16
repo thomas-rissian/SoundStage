@@ -22,7 +22,7 @@ class Artist
     #[Groups(['artist:read','event:read'])]
     private ?string $name = null;
 
-    #[ORM\Column(length: 255)]
+    #[ORM\Column(length: 255,nullable: true)]
     private ?string $image = null;
     #[Groups(['artist:read'])]
     #[ORM\OneToMany(targetEntity: Event::class, mappedBy: 'artist')]

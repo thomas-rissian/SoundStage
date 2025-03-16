@@ -4,12 +4,11 @@ namespace App\Form;
 
 use App\Entity\Artist;
 use App\Entity\Event;
-use App\Entity\User;
 use Symfony\Bridge\Doctrine\Form\Type\EntityType;
 use Symfony\Component\Form\AbstractType;
+use Symfony\Component\Form\Extension\Core\Type\DateTimeType; // Ajoutez cette ligne
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\OptionsResolver\OptionsResolver;
-use function Sodium\add;
 
 class EventType extends AbstractType
 {
@@ -17,12 +16,12 @@ class EventType extends AbstractType
     {
         $builder
             ->add('name')
-            ->add('date', null, [
-                'widget' => 'single_text',
+            ->add('date', DateTimeType::class, [ // Utilisez DateTimeType ici
+                'widget' => 'single_text', // Cette option est maintenant valide
             ])
             ->add('artist', EntityType::class, [
                 'class' => Artist::class,
-                'choice_label' => 'name ',
+                'choice_label' => 'name',
             ]);
     }
 
