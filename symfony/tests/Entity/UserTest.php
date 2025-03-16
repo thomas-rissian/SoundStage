@@ -31,7 +31,7 @@ class UserTest extends TestCase
     }
     public function testGetSetEmail(): void
     {
-        $email = 'test@example.com';
+        $email = 'test.txt@example.com';
         $this->user->setEmail($email);
         $this->assertEquals($email, $this->user->getEmail());
     }
@@ -60,7 +60,7 @@ class UserTest extends TestCase
 
     public function testUserIdentifier(): void
     {
-        $email = 'test@example.com';
+        $email = 'test.txt@example.com';
         $this->user->setEmail($email);
         $this->assertEquals($email, $this->user->getUserIdentifier());
     }

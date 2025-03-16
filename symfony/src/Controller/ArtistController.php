@@ -31,7 +31,9 @@ final class ArtistController extends AbstractController{
 
         $form = $this->createForm(ArtistType::class, $artist);
         $form->handleRequest($request);
+        dd($form->get("image")->getData());
         if($form->isSubmitted() && $form->isValid()){
+
             $imageFile = $form->get('image')->getData();
             if ($imageFile) {
                 $originalFilename = pathinfo($imageFile->getClientOriginalName(), PATHINFO_FILENAME);
