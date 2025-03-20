@@ -6,163 +6,118 @@ use App\Entity\Artist;
 use App\Entity\Event;
 use App\Form\EventType;
 use Doctrine\ORM\EntityManagerInterface;
-use Doctrine\ORM\Mapping\ClassMetadataFactory;
-use Doctrine\ORM\Mapping\ClassMetadata;
-use Doctrine\ORM\QueryBuilder;
-use Doctrine\ORM\Query;
-use Doctrine\Persistence\ManagerRegistry;
-use Symfony\Component\Form\Extension\Core\Type\DateType;
-use Symfony\Component\Form\Extension\Core\Type\FormType;
-use Symfony\Component\Form\FormInterface;
-use Symfony\Component\Form\PreloadedExtension;
-use Symfony\Component\Form\Test\TypeTestCase;
-use Symfony\Bridge\Doctrine\Form\Type\EntityType;
+use Symfony\Bundle\FrameworkBundle\Test\KernelTestCase;
+use Symfony\Component\Form\FormFactoryInterface;
+use DateTime;
 
-class EventTypeTest extends TypeTestCase
+class EventTypeTest extends KernelTestCase
 {
-    private $doctrine;
     private $entityManager;
+    private $formFactory;
+    private $artist;
 
     protected function setUp(): void
     {
-        // Create mocks for Doctrine's services
-        $this->doctrine = $this->createMock(ManagerRegistry::class);
-        $this->entityManager = $this->createMock(EntityManagerInterface::class);
+        // Démarrage du kernel Symfony pour accéder aux services
+        self::bootKernel();
 
-        // Configure the mock
-        $this->doctrine->expects($this->any())
-            ->method('getManager')
-            ->willReturn($this->entityManager);
+        // Récupération de l'EntityManager
+        $this->entityManager = static::getContainer()->get(EntityManagerInterface::class);
 
-        $this->doctrine->expects($this->any())
-            ->method('getManagerForClass')
-            ->willReturn($this->entityManager);
+        // Récupération de la factory de formulaires
+        $this->formFactory = static::getContainer()->get(FormFactoryInterface::class);
 
-        // Use the correct metadata factory class
-        $classMetadata = $this->createMock(ClassMetadata::class);
-        $metadataFactory = $this->createMock(ClassMetadataFactory::class);
+        // Création d'un artiste de test dans la base de données
+        $this->artist = new Artist();
+        $this->artist->setName('Test Artist For Form');
+        $this->artist->setDescription('Artist created for testing forms');
+        $this->artist->setImage('default-image.jpg'); // Ajout d'une valeur par défaut pour l'image
 
-        $this->entityManager->expects($this->any())
-            ->method('getMetadataFactory')
-            ->willReturn($metadataFactory);
-
-        $metadataFactory->expects($this->any())
-            ->method('hasMetadataFor')
-            ->willReturn(true);
-
-        $this->entityManager->expects($this->any())
-            ->method('getClassMetadata')
-            ->willReturn($classMetadata);
-
-        // Mock repository and query builder
-        $repository = $this->createMock(\Doctrine\ORM\EntityRepository::class);
-        $this->entityManager->expects($this->any())
-            ->method('getRepository')
-            ->willReturn($repository);
-
-        $queryBuilder = $this->createMock(QueryBuilder::class);
-        $repository->expects($this->any())
-            ->method('createQueryBuilder')
-            ->willReturn($queryBuilder);
-
-        // Use the concrete Query class instead of AbstractQuery
-        $query = $this->createMock(Query::class);
-        $queryBuilder->expects($this->any())
-            ->method('getQuery')
-            ->willReturn($query);
-
-        // Mock the query to return an empty array of results
-        $query->expects($this->any())
-            ->method('execute')
-            ->willReturn([]);
-
-        $queryBuilder->expects($this->any())
-            ->method('where')
-            ->willReturnSelf();
-
-        $queryBuilder->expects($this->any())
-            ->method('setParameter')
-            ->willReturnSelf();
-
-        // Add identity map mock
-        $classMetadata->expects($this->any())
-            ->method('getIdentifierFieldNames')
-            ->willReturn(['id']);
-
-        parent::setUp();
+        // Persistance de l'artiste dans la base de données
+        $this->entityManager->persist($this->artist);
+        $this->entityManager->flush();
     }
 
-    protected function getExtensions(): array
+    protected function tearDown(): void
     {
-        // Create an instance of EntityType with proper dependency injection
-        $entityType = new EntityType($this->doctrine);
+        // Suppression de l'artiste de test après le test
+        if ($this->artist && $this->artist->getId()) {
+            $this->entityManager->remove($this->artist);
+            $this->entityManager->flush();
+        }
 
-        // Create an instance of our form type with its dependency
-        $eventType = new EventType($this->doctrine);
+        // Fermeture de l'EntityManager
+        $this->entityManager->close();
+        $this->entityManager = null;
 
-        // Register both form types
-        return [
-            new PreloadedExtension(
-                [
-                    EntityType::class => $entityType,
-                    EventType::class => $eventType,
-                ],
-                []
-            ),
-        ];
+        // Fermeture du kernel
+        parent::tearDown();
     }
 
-    public function testBuildForm()
+    public function testSubmitValidData(): void
     {
-        $event = new Event();
+        // Création d'un formulaire EventType
+        $form = $this->formFactory->create(EventType::class);
 
-        // Create the form using the registered type
-        $form = $this->factory->create(EventType::class, $event);
+        // La date à utiliser dans le test
+        $testDate = new DateTime('2025-04-20');
 
-        // Assert that form was created successfully
-        $this->assertInstanceOf(FormInterface::class, $form);
+        // Soumission des données de formulaire
+        $form->submit([
+            'name' => 'Test Concert Event',
+            'date' => $testDate->format('Y-m-d'),
+            'artist' => $this->artist->getId(), // On utilise l'ID de l'artiste créé
+        ]);
 
-        // You can add more assertions here to test the form structure
+        // Vérification que le formulaire est valide
+        $this->assertTrue($form->isValid());
+
+        // Récupération de l'objet Event
+        $event = $form->getData();
+
+        // Vérification des données
+        $this->assertInstanceOf(Event::class, $event);
+        $this->assertEquals('Test Concert Event', $event->getName());
+        $this->assertEquals($testDate->format('Y-m-d'), $event->getDate()->format('Y-m-d'));
+        $this->assertEquals($this->artist->getId(), $event->getArtist()->getId());
+    }
+
+    public function testFormStructure(): void
+    {
+        // Création d'un formulaire EventType
+        $form = $this->formFactory->create(EventType::class);
+
+        // Vérification de la structure du formulaire
         $this->assertTrue($form->has('name'));
         $this->assertTrue($form->has('date'));
         $this->assertTrue($form->has('artist'));
+
+        // Vérification des options du champ date
+        $dateField = $form->get('date');
+        $dateOptions = $dateField->getConfig()->getOptions();
+        $this->assertEquals('single_text', $dateOptions['widget']);
+
+        // Vérification du champ artist
+        $artistField = $form->get('artist');
+        $artistOptions = $artistField->getConfig()->getOptions();
+        $this->assertEquals(Artist::class, $artistOptions['class']);
+        $this->assertEquals('name', $artistOptions['choice_label']);
     }
-    // Version modifiée pour les tests uniquement
-    public function testArtistFieldValidationWithSimplifiedForm()
+
+    public function testInitialData(): void
     {
-        // Créer un formulaire de test simplifié qui n'utilise pas EntityType
-        $formBuilder = $this->factory->createBuilder(FormType::class, new Event());
-        $formBuilder
-            ->add('name')
-            ->add('date', DateType::class, [
-                'widget' => 'single_text',
-            ])
-            ->add('artist'); // Pas de EntityType pour simplifier le test
+        // Création d'un Event avec des données initiales
+        $event = new Event();
+        $event->setName('Existing Event');
+        $event->setDate(new DateTime('2025-05-15'));
+        $event->setArtist($this->artist);
 
-        $form = $formBuilder->getForm();
+        // Création du formulaire avec l'Event existant
+        $form = $this->formFactory->create(EventType::class, $event);
 
-        // Créer un artiste simple
-        $artist = new Artist();
-        $reflectionClass = new \ReflectionClass(Artist::class);
-        $idProperty = $reflectionClass->getProperty('id');
-        $idProperty->setValue($artist, 1);
-
-        $nameProperty = $reflectionClass->getProperty('name');
-        $nameProperty->setValue($artist, 'Test Artist');
-
-        // Soumettre le formulaire avec l'artiste directement
-        $formData = [
-            'name' => 'Concert Live',
-            'date' => '2025-03-17',
-            'artist' => $artist
-        ];
-
-        $form->submit($formData);
-
-        $this->assertTrue($form->isValid());
-        $this->assertSame('Concert Live', $form->getData()->getName());
-        $this->assertSame('2025-03-17', $form->getData()->getDate()->format('Y-m-d'));
-        $this->assertSame($artist, $form->getData()->getArtist());
+        // Vérification des données initiales
+        $this->assertEquals('Existing Event', $form->get('name')->getData());
+        $this->assertEquals('2025-05-15', $form->get('date')->getData()->format('Y-m-d'));
+        $this->assertEquals($this->artist->getId(), $form->get('artist')->getData()->getId());
     }
-
 }
