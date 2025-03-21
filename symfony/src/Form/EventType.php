@@ -30,7 +30,7 @@ class EventType extends AbstractType
             ->add('artist', EntityType::class, [
                 'class' => Artist::class,
                 'choice_label' => 'name',
-                'em' => $this->doctrine->getManager(),
+                'choice_value' => 'id',
             ]);
     }
 
