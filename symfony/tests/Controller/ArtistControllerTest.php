@@ -2,92 +2,279 @@
 
 namespace App\Tests\Controller;
 
-use App\Entity\User;
 use App\Entity\Artist;
+use App\Entity\User;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Test\WebTestCase;
+use Symfony\Component\HttpFoundation\File\UploadedFile;
 use Symfony\Component\PasswordHasher\Hasher\UserPasswordHasherInterface;
 
 class ArtistControllerTest extends WebTestCase
 {
-    private function createAuthenticatedClient(bool $createArtist = false): object
+    private ?EntityManagerInterface $entityManager = null;
+    private ?UserPasswordHasherInterface $passwordHasher = null;
+
+    protected function setUp(): void
     {
-        // Create a fresh client for each test
+        parent::setUp();
+
+        // Ne pas initialiser les services ici
+    }
+
+    protected function tearDown(): void
+    {
+        // Nettoie la base de données après chaque test
+        if ($this->entityManager) {
+            $user = $this->entityManager->getRepository(User::class)->findOneBy(['email' => 'testuser@example.com']);
+            if ($user) {
+                $this->entityManager->remove($user);
+            }
+
+            $artist = $this->entityManager->getRepository(Artist::class)->findOneBy(['name' => 'Test Artist']);
+            if ($artist) {
+                $this->entityManager->remove($artist);
+            }
+
+            $this->entityManager->flush();
+        }
+
+        parent::tearDown();
+    }
+
+    private function createAuthenticatedClient(bool $isAdmin = false, bool $createArtist = false): object
+    {
         $client = static::createClient();
 
-        // Get services from container
+        // Initialise les services après avoir appelé createClient
         $container = static::getContainer();
-        $entityManager = $container->get(EntityManagerInterface::class);
-        $passwordHasher = $container->get(UserPasswordHasherInterface::class);
+        $this->entityManager = $container->get(EntityManagerInterface::class);
+        $this->passwordHasher = $container->get(UserPasswordHasherInterface::class);
 
-        // Check if user already exists
-        $user = $entityManager->getRepository(User::class)->findOneBy(['email' => 'testuser@example.com']);
-
+        // Crée ou récupère l'utilisateur de test
+        $user = $this->entityManager->getRepository(User::class)->findOneBy(['email' => 'testuser@example.com']);
         if (!$user) {
-            // Create test user only if it doesn't exist
             $user = new User();
             $user->setEmail('testuser@example.com');
             $user->setPseudo('test');
-            $user->setPassword($passwordHasher->hashPassword($user, 'password123'));
-            $user->setRoles(['ROLE_USER']);
+            $user->setPassword($this->passwordHasher->hashPassword($user, 'password123'));
+            $user->setRoles($isAdmin ? ['ROLE_USER', 'ROLE_ADMIN'] : ['ROLE_USER']);
 
-            $entityManager->persist($user);
-            $entityManager->flush();
+            $this->entityManager->persist($user);
+            $this->entityManager->flush();
         }
 
-        // Create test artist if needed
+        // Crée un artiste de test si nécessaire
         if ($createArtist) {
             // Check if test artist already exists
-            $existingArtist = $entityManager->getRepository(Artist::class)->findOneBy(['name' => 'Test Artist']);
+            $existingArtist = $this->entityManager->getRepository(Artist::class)->findOneBy(['name' => 'Test Artist']);
 
             if (!$existingArtist) {
                 $artist = new Artist();
                 $artist->setName('Test Artist');
-                $entityManager->persist($artist);
-                $entityManager->flush();
+                $this->entityManager->persist($artist);
+                $this->entityManager->flush();
             }
         }
 
-        // Login the user
+        // Connecte l'utilisateur
         $client->loginUser($user);
 
         return $client;
     }
 
-    public function testArtistPageRequiresAuthentication(): void
+    private function createTestArtist(): Artist
     {
-        $client = static::createClient();
-        $client->request('GET', '/artist');
+        // Crée un artiste de test
+        $artist = new Artist();
+        $artist->setName('Test Artist');
+        $artist->setDescription('Test Description');
+        $this->entityManager->persist($artist);
+        $this->entityManager->flush();
 
-        $this->assertResponseRedirects('/');
+        return $artist;
     }
 
-    public function testArtistPageAccessibleToUser(): void
+    // Test pour vérifier que l'accès à la création est refusé sans ROLE_ADMIN
+    public function testCreateArtistAccessDeniedForNonAdmin(): void
     {
-        $client = $this->createAuthenticatedClient();
-        $client->request('GET', '/artist');
+        $client = $this->createAuthenticatedClient(false); // Utilisateur sans ROLE_ADMIN
+        $client->request('GET', '/artist/create');
+
+        $this->assertResponseRedirects('/artist');
+    }
+
+    // Test pour vérifier que l'accès à la création est autorisé avec ROLE_ADMIN
+    public function testCreateArtistAccessGrantedForAdmin(): void
+    {
+        $client = $this->createAuthenticatedClient(true); // Utilisateur avec ROLE_ADMIN
+        $client->request('GET', '/artist/create');
 
         $this->assertResponseIsSuccessful();
-        $this->assertSelectorTextContains('h1', 'Artistes');
+        $this->assertSelectorTextContains('h1', 'Création d\'un Artiste');
     }
 
-    public function testArtistListDisplaysArtists(): void
+    // Test pour vérifier que le formulaire de création fonctionne
+    public function testCreateArtistFormSubmission(): void
     {
-        // Crée un client authentifié et un artiste de test
-        $client = $this->createAuthenticatedClient(true);
+        $client = $this->createAuthenticatedClient(true); // Utilisateur avec ROLE_ADMIN
 
-        // Récupère l'EntityManager pour accéder à la base de données
-        $entityManager = static::getContainer()->get(EntityManagerInterface::class);
+        $imagePath = __DIR__ . '/../../public/test/test.png';
+        $image = new UploadedFile(
+            $imagePath,
+            'test_image.jpg',
+            'image/jpeg',
+            null,
+            true
+        );
 
-        // Récupère l'artiste de test créé dans createAuthenticatedClient
-        $artist = $entityManager->getRepository(Artist::class)->findOneBy(['name' => 'Test Artist']);
+        // Soumet le formulaire
+        $crawler = $client->request('GET', '/artist/create');
+        $form = $crawler->selectButton('Créer')->form([
+            'artist[name]' => 'New Artist',
+            'artist[description]' => 'New Description',
+            'artist[image]' => $image,
+        ]);
+
+        $client->submit($form);
+
+        // Vérifie la redirection après la création
+        $this->assertResponseRedirects('/artist');
+
+        // Vérifie que l'artiste a été créé en base de données
+        $artist = $this->entityManager->getRepository(Artist::class)->findOneBy(['name' => 'New Artist']);
+        $this->assertNotNull($artist, 'L\'artiste n\'a pas été créé en base de données.');
+        $this->assertSame('New Description', $artist->getDescription());
+    }
+
+    // Test pour vérifier que l'accès à la modification est refusé sans ROLE_ADMIN
+    public function testEditArtistAccessDeniedForNonAdmin(): void
+    {
+        $client = $this->createAuthenticatedClient(false); // Utilisateur sans ROLE_ADMIN
+        $artist = $this->createTestArtist();
+        $client->request('GET', '/artist/' . $artist->getId() . '/edit');
+
+        $this->assertResponseRedirects('/artist');
+    }
+
+    // Test pour vérifier que l'accès à la modification est autorisé avec ROLE_ADMIN
+    public function testEditArtistAccessGrantedForAdmin(): void
+    {
+        $client = $this->createAuthenticatedClient(true); // Utilisateur avec ROLE_ADMIN
+        $artist = $this->createTestArtist();
+        $client->request('GET', '/artist/' . $artist->getId() . '/edit');
+
+        $this->assertResponseIsSuccessful();
+        $this->assertSelectorTextContains('h1', 'Modification d\'un Artiste');
+    }
+
+    // Test pour vérifier que le formulaire de modification fonctionne
+    public function testEditArtistFormSubmission(): void
+    {
+        $client = $this->createAuthenticatedClient(true); // Utilisateur avec ROLE_ADMIN
+        $artist = $this->createTestArtist();
+
+        $imagePath = __DIR__ . '/../../public/test/test.png';
+        $image = new UploadedFile(
+            $imagePath,
+            'test_image.jpg',
+            'image/jpeg',
+            null,
+            true
+        );
+
+        // Soumet le formulaire
+        $crawler = $client->request('GET', '/artist/' . $artist->getId() . '/edit');
+        $form = $crawler->selectButton('Modifier')->form([
+            'artist[name]' => 'Updated Artist',
+            'artist[description]' => 'Updated Description',
+            'artist[image]' => $image,
+        ]);
+
+        $client->submit($form);
+
+        // Vérifie la redirection après la modification
+        $this->assertResponseRedirects('/artist');
+
+        // Vérifie que l'artiste a été modifié en base de données
+        $updatedArtist = $this->entityManager->getRepository(Artist::class)->find($artist->getId());
+        $this->assertSame('Updated Artist', $updatedArtist->getName());
+        $this->assertSame('Updated Description', $updatedArtist->getDescription());
+    }
+
+    // Test pour vérifier que l'accès à la suppression est refusé sans ROLE_ADMIN
+    public function testDeleteArtistAsUser(): void
+    {
+        $client = $this->createAuthenticatedClient(false, true); // Utilisateur sans ROLE_ADMIN
+        $artist = $this->entityManager->getRepository(Artist::class)->findOneBy(['name' => 'Test Artist']);
         $this->assertNotNull($artist, 'L\'artiste de test n\'a pas été trouvé en base de données.');
 
-        // Effectue une requête GET sur la page de l'artiste
-        $client->request('GET', '/artist/' . $artist->getId());
+        // Tente de supprimer l'artiste
+        $client->request('GET', '/artist/' . $artist->getId() . '/delete');
 
-        // Pour le debug, sauvegarde le contenu HTML dans un fichier
-        file_put_contents('debug.html', $client->getResponse()->getContent());
+        // Vérifie que l'artiste n'a pas été supprimé
+        $artistStillExists = $this->entityManager->getRepository(Artist::class)->find($artist->getId());
+        $this->assertNotNull($artistStillExists, 'L\'artiste ne devrait pas être supprimé par un utilisateur non admin.');
+    }
+
+    // Test pour vérifier que l'accès à la suppression est autorisé avec ROLE_ADMIN
+    public function testDeleteArtistAsAdmin(): void
+    {
+        $client = $this->createAuthenticatedClient(true, true); // Utilisateur avec ROLE_ADMIN
+
+        // Crée un artiste de test
+        $artist = new Artist();
+        $artist->setName('Test Artist');
+        $this->entityManager->persist($artist);
+        $this->entityManager->flush();
+
+        // Vérifie que l'artiste a été créé en base de données
+        $artistId = $artist->getId();
+        $this->assertNotNull($artistId, 'L\'artiste de test n\'a pas d\'identifiant.');
+
+        // Tente de supprimer l'artiste
+        $client->request('GET', '/artist/' . $artistId . '/delete');
+
+        // Vérifie la redirection après la suppression
+        $this->assertResponseRedirects('/artist');
+
+        // Vérifie que l'artiste a été supprimé
+        $deletedArtist = $this->entityManager->getRepository(Artist::class)->find($artistId);
+        $this->assertNull($deletedArtist, 'L\'artiste devrait être supprimé par un admin.');
+    }
+
+    // Test pour vérifier la suppression d'un artiste inexistant
+    public function testDeleteNonExistentArtist(): void
+    {
+        $client = $this->createAuthenticatedClient(true); // Utilisateur avec ROLE_ADMIN
+
+        // Tente de supprimer un artiste inexistant
+        $nonExistentId = 9999;
+        $client->request('GET', '/artist/' . $nonExistentId . '/delete');
+
+        // Vérifie la redirection
+        $this->assertResponseRedirects('/artist');
+    }
+    public function testGetArtist(): void
+    {
+        $client = $this->createAuthenticatedClient(false);
+
+        // Crée un artiste de test
+        $artist = new Artist();
+        $artist->setName('Test Artist');
+        $artist->setDescription('Test Description');
+        $artist->setImage('test_image.jpg');
+
+        // Persiste l'artiste en base de données
+        $entityManager = static::getContainer()->get(EntityManagerInterface::class);
+        $entityManager->persist($artist);
+        $entityManager->flush();
+
+        // Récupère l'ID de l'artiste
+        $artistId = $artist->getId();
+        $this->assertNotNull($artistId, 'L\'artiste de test n\'a pas d\'identifiant.');
+
+        // Effectue une requête GET sur la page de l'artiste
+        $client->request('GET', '/artist/' . $artistId);
 
         // Vérifie que la réponse est réussie
         $this->assertResponseIsSuccessful();
@@ -95,152 +282,28 @@ class ArtistControllerTest extends WebTestCase
         // Vérifie que le nom de l'artiste est présent dans la page
         $this->assertSelectorTextContains('.detail-page h1', 'Test Artist');
 
-        // Vérifie que la description de l'artiste est présente (si elle est définie)
-        if ($artist->getDescription()) {
-            $this->assertSelectorTextContains('.detail-page .description', $artist->getDescription());
-        }
+        // Vérifie que la description de l'artiste est présente
+        $this->assertSelectorTextContains('.detail-page .description', 'Test Description');
 
-        // Vérifie que l'image de l'artiste est présente (si elle est définie)
-        if ($artist->getImage()) {
-            $this->assertSelectorExists('.detail-page .artist-image[src*="' . $artist->getImage() . '"]');
-        }
+        // Vérifie que l'image de l'artiste est présente
+        $this->assertSelectorExists('.detail-page .artist-image[src*="/uploads/images/test_image.jpg"]');
 
         // Vérifie que la section des événements est présente
         $this->assertSelectorTextContains('.detail-page .right-column h2', 'Événements');
 
         // Vérifie que le nombre total d'événements est affiché
-        $this->assertSelectorTextContains('.detail-page .right-column p', 'Nombre total d\'événements : ' . count($artist->getEvents()));
-
-        // Vérifie que chaque événement est listé
-        foreach ($artist->getEvents() as $event) {
-            $this->assertSelectorTextContains('.detail-page .right-column ul', $event->getName());
-        }
-    }
-    public function testArtistSearch(): void
-    {
-        // Crée un client authentifié
-        $client = $this->createAuthenticatedClient();
-
-        // Récupère l'EntityManager pour accéder à la base de données
-        $entityManager = static::getContainer()->get(EntityManagerInterface::class);
-
-        // Crée des artistes de test
-        $artist1 = new Artist();
-        $artist1->setName('Artist One');
-        $entityManager->persist($artist1);
-
-        $artist2 = new Artist();
-        $artist2->setName('Artist Two');
-        $entityManager->persist($artist2);
-
-        $entityManager->flush();
-
-        // Effectue une requête GET sur /artist/search avec un paramètre de recherche
-        $client->request('GET', '/artist/search', ['name' => 'Artist']);
-
-        // Vérifie que la réponse est réussie
-        $this->assertResponseIsSuccessful();
-
-        // Vérifie que les artistes sont présents dans la réponse
-        $this->assertSelectorTextContains('body', 'Artist One');
-        $this->assertSelectorTextContains('body', 'Artist Two');
-
-        // Effectue une requête GET avec un nom spécifique
-        $client->request('GET', '/artist/search', ['name' => 'One']);
-
-        // Vérifie que la réponse est réussie
-        $this->assertResponseIsSuccessful();
-
-        // Vérifie que seul "Artist One" est présent dans la réponse
-        $this->assertSelectorTextContains('body', 'Artist One');
-        $this->assertSelectorTextNotContains('body', 'Artist Two');
+        $this->assertSelectorTextContains('.detail-page .right-column p', 'Nombre total d\'événements : 0');
     }
 
-    public function testDeleteArtistAsAdmin(): void
+    public function testGetNonExistentArtist(): void
     {
-        // Create an admin authenticated client
-        $client = $this->createAuthenticatedClient(true);
 
-        // Get services from container
-        $container = static::getContainer();
-        $entityManager = $container->get(EntityManagerInterface::class);
-
-        // Get the current user and make them an admin
-        $user = $entityManager->getRepository(User::class)->findOneBy(['email' => 'testuser@example.com']);
-        $user->setRoles(['ROLE_USER', 'ROLE_ADMIN']);
-        $entityManager->flush();
-
-        // Reload the client with admin user
-        $client->loginUser($user);
-
-        // Get the artist to delete
-        $artist = $entityManager->getRepository(Artist::class)->findOneBy(['name' => 'Test Artist']);
-        $this->assertNotNull($artist, 'The test artist was not found in the database.');
-        $artistId = $artist->getId();
-
-        // Request the delete route
-        $client->request('GET', '/artist/' . $artistId . '/delete');
-
-        // Should redirect to the artist list
-        $this->assertResponseRedirects('/artist');
-
-        // Follow the redirect
-        $client->followRedirect();
-
-        // Verify the redirect landed on the correct page
-        $this->assertSelectorTextContains('h1', 'Artistes');
-
-        // Verify the artist no longer exists in the database
-        $deletedArtist = $entityManager->getRepository(Artist::class)->find($artistId);
-        $this->assertNull($deletedArtist, 'The artist should be deleted from the database.');
-    }
-
-    public function testDeleteNonExistentArtist(): void
-    {
-        // Create an admin authenticated client
-        $client = $this->createAuthenticatedClient();
-
-        // Get the current user and make them an admin
-        $entityManager = static::getContainer()->get(EntityManagerInterface::class);
-        $user = $entityManager->getRepository(User::class)->findOneBy(['email' => 'testuser@example.com']);
-        $user->setRoles(['ROLE_USER', 'ROLE_ADMIN']);
-        $entityManager->flush();
-
-        // Reload the client with admin user
-        $client->loginUser($user);
-
-        // Try to delete a non-existent artist with an ID that shouldn't exist
+        $client = $this->createAuthenticatedClient(false);
+        // Tente d'accéder à un artiste inexistant
         $nonExistentId = 9999;
-        $client->request('GET', '/artist/' . $nonExistentId . '/delete');
+        $client->request('GET', '/artist/' . $nonExistentId);
 
-        // Should redirect to the artist list
+        // Vérifie que la réponse est une redirection vers la liste des artistes
         $this->assertResponseRedirects('/artist');
-    }
-    public function testDeleteArtistAsUser(): void
-    {
-        // Crée un client authentifié avec un utilisateur normal (ROLE_USER)
-        $client = $this->createAuthenticatedClient(true);
-        $entityManager = static::getContainer()->get(EntityManagerInterface::class);
-
-        $user = $entityManager->getRepository(User::class)->findOneBy(['email' => 'testuser@example.com']);
-        $user->setRoles(['ROLE_USER']);
-        $entityManager->flush();
-
-        // Reload the client with admin user
-        $client->loginUser($user);
-        // Récupère l'EntityManager pour accéder à la base de données
-        $entityManager = static::getContainer()->get(EntityManagerInterface::class);
-
-        // Récupère l'artiste à supprimer
-        $artist = $entityManager->getRepository(Artist::class)->findOneBy(['name' => 'Test Artist']);
-        $this->assertNotNull($artist, 'L\'artiste de test n\'a pas été trouvé en base de données.');
-        $artistId = $artist->getId();
-
-        // Tente de supprimer l'artiste
-        $client->request('GET', '/artist/' . $artistId . '/delete');
-
-        // Vérifie que l'artiste n'a pas été supprimé
-        $artistStillExists = $entityManager->getRepository(Artist::class)->find($artistId);
-        $this->assertNotNull($artistStillExists, 'L\'artiste ne devrait pas être supprimé par un utilisateur non admin.');
     }
 }
