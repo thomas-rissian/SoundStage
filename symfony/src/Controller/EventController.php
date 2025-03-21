@@ -60,7 +60,7 @@ final class EventController extends AbstractController{
         if($event === null){
             return $this->redirectToRoute('app_event_all');
         }
-        if($event->getCreatedBy() === $this->getUser() || $this->getUser()->getRoles() == 'ROLE_ADMIN') {
+        if($event->getCreatedBy() === $this->getUser() || $this->isGranted("ROLE_ADMIN")) {
 
             $form = $this->createForm(EventType::class, $event);
             $form->handleRequest($request);
@@ -97,7 +97,7 @@ final class EventController extends AbstractController{
         if($event === null){
             return $this->redirectToRoute('app_event_all');
         }
-        if($event->getCreatedBy() === $this->getUser() || $this->getUser()->getRoles() == 'ROLE_ADMIN') {
+        if($event->getCreatedBy() === $this->getUser() || $this->isGranted("ROLE_ADMIN")) {
             $entityManager->remove($event);
             $entityManager->flush();
         }

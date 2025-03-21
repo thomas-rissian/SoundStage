@@ -9,6 +9,7 @@ use Symfony\Component\Form\Extension\Core\Type\RepeatedType;
 use Symfony\Component\Form\Extension\Core\Type\SubmitType;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\OptionsResolver\OptionsResolver;
+use Symfony\Component\Validator\Constraints\Email;
 
 class UserType extends AbstractType
 {
@@ -17,7 +18,10 @@ class UserType extends AbstractType
         $builder
             ->add('email', EmailType::class, [
                 'label' => 'Email',
-                'attr' => ['placeholder' => 'Entrez votre email']
+                'attr' => ['placeholder' => 'Entrez votre email'],
+                 'constraints' => [
+                        new Email()
+                     ],
             ])
             ->add('password', RepeatedType::class, [
                 'type' => PasswordType::class,
@@ -26,13 +30,11 @@ class UserType extends AbstractType
                 'required' => false,
                 'mapped' => false,
             ])
-           ;
+        ;
     }
 
     public function configureOptions(OptionsResolver $resolver): void
     {
-        $resolver->setDefaults([
-            // Configure your form options here
-        ]);
+        $resolver->setDefaults([]);
     }
 }

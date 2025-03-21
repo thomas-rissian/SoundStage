@@ -8,6 +8,7 @@ use Symfony\Component\Form\Extension\Core\Type\FileType;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\OptionsResolver\OptionsResolver;
 use Symfony\Component\Validator\Constraints\File;
+use Symfony\Component\Validator\Constraints\NotBlank;
 
 class ArtistType extends AbstractType
 {
@@ -31,6 +32,7 @@ class ArtistType extends AbstractType
                         'mimeTypesMessage' => 'Veuillez télécharger une image valide (JPEG, PNG, GIF)',
                     ])
                 ],
+
             ])
         ;
     }
