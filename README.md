@@ -1,5 +1,10 @@
 # Bienvenue sur SoundStage
 
+## Créateur du projet 
+
+- RISSIAN Thomas
+- JUTTAUD Adrien
+
 ## La plateforme d'événements musicaux
 
 Elle est divisée en deux parties :
