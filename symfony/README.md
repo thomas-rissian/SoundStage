@@ -58,3 +58,30 @@ En cas de problème, videz le cache :
 
 ```shell
 php bin/console cache:clear --env=prod
+
+```
+
+## Test 
+
+### Création et migration de la base de données
+
+```shell
+  php bin/console doctrine:database:create --env=test
+```
+```shell
+  php bin/console doctrine:migrations:migrate --env=test
+```
+```shell
+  php bin/console doctrine:schema:update --force --env=test
+```
+
+### Couverture de code 
+
+#### Shell 
+```shell
+    php bin/phpunit --coverage-text
+```
+#### HTML 
+```shell
+    php bin/phpunit --coverage-html var/coverage
+```

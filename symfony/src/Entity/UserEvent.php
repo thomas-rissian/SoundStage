@@ -7,15 +7,15 @@ use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\Serializer\Annotation\Groups;
 
 #[ORM\Entity(repositoryClass: UserEventRepository::class)]
-#[ORM\UniqueConstraint(name: 'UNIQ_EVENT_ID', columns: ['user_id', 'event_id'])]
+#[ORM\UniqueConstraint(name: 'UNIQ_EVENT_ID', columns: ['user_ref_id', 'event_id'])]
 class UserEvent
 {
     #[ORM\ManyToOne(inversedBy: 'userEvents')]
-    #[ORM\JoinColumn(nullable: false)]
+    #[ORM\JoinColumn(name: 'user_ref_id',nullable: false)]
     #[Groups(['event:read'])]
     private ?User $userRef = null;
     #[ORM\ManyToOne(inversedBy: 'userEvents')]
-    #[ORM\JoinColumn(nullable: false)]
+    #[ORM\JoinColumn(name: 'event_id',nullable: false)]
     #[Groups(['event:read'])]
     private ?Event $event = null;
 

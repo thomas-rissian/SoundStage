@@ -45,8 +45,6 @@ class SecurityControllerTest extends WebTestCase
         $client = static::createClient();
         $crawler = $client->request('GET', '/register');
 
-        dump($client->getResponse()->getContent());
-
         $this->assertSelectorExists('form[name="registrationForm"]');
 
         $form = $crawler->selectButton('Register')->form([
