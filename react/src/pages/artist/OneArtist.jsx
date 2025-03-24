@@ -2,7 +2,7 @@ import { getArtistById } from "../../services/api.js";
 import React, { useEffect, useState } from "react";
 import {useParams, Link} from "react-router-dom";
 import {Loading} from "../extra/loading.jsx";
-
+import {SYMFONY_URL} from "../../services/api.js";
 export function ArtistById() {
     const { id } = useParams();
     const [artist, setArtist] = useState(null);
@@ -34,12 +34,13 @@ export function ArtistById() {
                 <div className="information-page">
                     <h3>Description : </h3>
                     <p>{artist.description}</p>
+                    <img src={SYMFONY_URL + "/uploads/images/"+artist.image} alt="test"/>
                 </div>
 
                 <div className="list-element-right">
                     {artist.events && artist.events.length > 0 && (
                         <div>
-                            <h3>Evènement Créer ({artist.events.length})</h3>
+                            <h3>Evènement Participant ({artist.events.length})</h3>
                             <div className="list-element">
                                 {artist.events.map((event) => (
                                     <ul>

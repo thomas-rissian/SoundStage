@@ -1,19 +1,19 @@
 import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { getAllArtist } from "../../services/api.js";
-import {Loading} from "../extra/loading.jsx";
+import { Loading } from "../extra/loading.jsx";
 
 export const AllArtist = () => {
     const [artists, setArtists] = useState([]);
     const [filteredArtists, setFilteredArtists] = useState([]);
     const [sortOrder, setSortOrder] = useState('asc');
     const [searchTerm, setSearchTerm] = useState('');
-    const [loading , setLoading] = useState(true);
+    const [loading, setLoading] = useState(true);
 
     useEffect(() => {
         getAllArtist()
             .then((data) => {
-                setArtists(data)
+                setArtists(data);
                 setLoading(false);
             })
             .catch(console.error);
@@ -28,25 +28,26 @@ export const AllArtist = () => {
             artist.name.toLowerCase().includes(searchTerm.toLowerCase())
         );
 
-        if (sortOrder === 'asc') {
-            filtered.sort((a, b) => a.name.localeCompare(b.name));
-        } else {
-            filtered.sort((a, b) => b.name.localeCompare(a.name));
-        }
+        filtered.sort((a, b) =>
+            sortOrder === 'asc' ? a.name.localeCompare(b.name) : b.name.localeCompare(a.name)
+        );
 
         setFilteredArtists(filtered);
     };
 
+    const toggleSortOrder = () => {
+        setSortOrder(sortOrder === 'asc' ? 'desc' : 'asc');
+    };
+
     const truncateDescription = (description) => {
         const maxLength = 50;
-        if (description.length > maxLength) {
-            return description.slice(0, maxLength) + '...';
-        }
-        return description;
+        return description.length > maxLength ? description.slice(0, maxLength) + '...' : description;
     };
+
     if (loading) {
         return <Loading />;
     }
+
     return (
         <div className="artist-page">
             <h1>Artistes</h1>
@@ -59,14 +60,9 @@ export const AllArtist = () => {
                     onChange={(e) => setSearchTerm(e.target.value)}
                     className="artist-search-input"
                 />
-                <select
-                    value={sortOrder}
-                    onChange={(e) => setSortOrder(e.target.value)}
-                    className="artist-sort-select"
-                >
-                    <option value="asc">croissant</option>
-                    <option value="desc">décroissant</option>
-                </select>
+                <button onClick={toggleSortOrder} className="artist-sort-button">
+                    Trier par nom {sortOrder === 'asc' ? '▲' : '▼'}
+                </button>
             </div>
 
             <div className="artist-list">

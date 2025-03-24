@@ -1,7 +1,7 @@
 import { getAllEvents } from "../../services/api.js";
 import React, { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
-import {Loading} from "../extra/loading.jsx";
+import { Loading } from "../extra/loading.jsx";
 
 export function AllEvents() {
     const [events, setEvents] = useState([]);
@@ -10,6 +10,8 @@ export function AllEvents() {
     const [selectedArtist, setSelectedArtist] = useState('');
     const [selectedDate, setSelectedDate] = useState('');
     const [filteredEvents, setFilteredEvents] = useState([]);
+    const [sortByNameAsc, setSortByNameAsc] = useState(true);
+    const [sortByDateAsc, setSortByDateAsc] = useState(true);
 
     useEffect(() => {
         setLoading(true);
@@ -26,10 +28,10 @@ export function AllEvents() {
 
     useEffect(() => {
         filterAndSortEvents();
-    }, [searchTerm, selectedArtist, selectedDate, events]);
+    }, [searchTerm, selectedArtist, selectedDate, events, sortByNameAsc, sortByDateAsc]);
 
     const filterAndSortEvents = () => {
-        let filtered = events;
+        let filtered = [...events];
 
         if (searchTerm) {
             filtered = filtered.filter(event =>
@@ -52,6 +54,22 @@ export function AllEvents() {
         setFilteredEvents(filtered);
     };
 
+    const sortByName = () => {
+        const sorted = [...filteredEvents].sort((a, b) =>
+            sortByNameAsc ? a.name.localeCompare(b.name) : b.name.localeCompare(a.name)
+        );
+        setFilteredEvents(sorted);
+        setSortByNameAsc(!sortByNameAsc);
+    };
+
+    const sortByDate = () => {
+        const sorted = [...filteredEvents].sort((a, b) =>
+            sortByDateAsc ? new Date(a.date) - new Date(b.date) : new Date(b.date) - new Date(a.date)
+        );
+        setFilteredEvents(sorted);
+        setSortByDateAsc(!sortByDateAsc);
+    };
+
     if (loading) {
         return <Loading />;
     }
@@ -68,7 +86,6 @@ export function AllEvents() {
                     onChange={(e) => setSearchTerm(e.target.value)}
                     className="event-search-input"
                 />
-
                 <input
                     type="text"
                     placeholder="Filtrer par artiste..."
@@ -76,13 +93,17 @@ export function AllEvents() {
                     onChange={(e) => setSelectedArtist(e.target.value)}
                     className="artist-search-input"
                 />
-
                 <input
                     type="date"
                     value={selectedDate}
                     onChange={(e) => setSelectedDate(e.target.value)}
                     className="event-date-input"
                 />
+            </div>
+
+            <div className="event-sort-section">
+                <button onClick={sortByName}>Trier par nom {sortByNameAsc ? '▲' : '▼'}</button>
+                <button onClick={sortByDate}>Trier par date {sortByDateAsc ? '▲' : '▼'}</button>
             </div>
 
             <div className="event-list">
