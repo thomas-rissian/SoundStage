@@ -24,11 +24,9 @@ final class ArtistController extends AbstractController{
     }
 
     #[Route('/artist/create', name: 'app_artist_create', methods: ['GET', 'POST'])]
+    #[IsGranted("ROLE_ADMIN")]
     public function createArtist(Request $request,EntityManagerInterface $entityManager): Response
     {
-        if(!$this->isGranted('ROLE_ADMIN')){
-            return $this->redirectToRoute('app_artist_all');
-        }
         $artist = new Artist();
 
         $form = $this->createForm(ArtistType::class, $artist);
@@ -87,11 +85,9 @@ final class ArtistController extends AbstractController{
         ]);
     }
     #[Route('/artist/{id}/edit', name: 'app_artist_edit', methods: ['GET', 'POST'])]
+    #[IsGranted("ROLE_ADMIN")]
     public function editArtist(Request $request,EntityManagerInterface $entityManager, int $id): Response
     {
-        if(!$this->isGranted('ROLE_ADMIN')){
-            return $this->redirectToRoute('app_artist_all');
-        }
         $artist = $entityManager->getRepository(Artist::class)->find($id);
         if($artist === null){
             return $this->redirectToRoute('app_artist_all');
@@ -129,16 +125,13 @@ final class ArtistController extends AbstractController{
         ]);
     }
     #[Route('/artist/{id}/delete', name: 'app_artist_delete', methods: ['GET'])]
+    #[IsGranted("ROLE_ADMIN")]
     public function deleteArtiste(EntityManagerInterface $entityManager, int $id): Response
     {
         $artist = $entityManager->getRepository(Artist::class)->find($id);
-        if($artist === null){
-            return $this->redirectToRoute('app_artist_all');
-        }
-        if($this->isGranted('ROLE_ADMIN')){
-            $entityManager->remove($artist);
-            $entityManager->flush();
-        }
+        $entityManager->remove($artist);
+        $entityManager->flush();
+
 
         return $this->redirectToRoute('app_artist_all');
     }

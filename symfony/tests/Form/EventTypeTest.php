@@ -66,7 +66,7 @@ class EventTypeTest extends KernelTestCase
         $form->submit([
             'name' => 'Test Concert Event',
             'date' => $testDate->format('Y-m-d'),
-            'artist' => $this->artist->getId(), // On utilise l'ID de l'artiste créé
+            'artist' => $this->artist,
         ]);
 
         // Vérification que le formulaire est valide

@@ -99,8 +99,7 @@ class ArtistControllerTest extends WebTestCase
     {
         $client = $this->createAuthenticatedClient(false); // Utilisateur sans ROLE_ADMIN
         $client->request('GET', '/artist/create');
-
-        $this->assertResponseRedirects('/artist');
+        $this->assertStringContainsString('ROLE_ADMIN', $client->getResponse());
     }
 
     // Test pour vérifier que l'accès à la création est autorisé avec ROLE_ADMIN
@@ -153,7 +152,7 @@ class ArtistControllerTest extends WebTestCase
         $artist = $this->createTestArtist();
         $client->request('GET', '/artist/' . $artist->getId() . '/edit');
 
-        $this->assertResponseRedirects('/artist');
+        $this->assertStringContainsString('ROLE_ADMIN', $client->getResponse());
     }
 
     // Test pour vérifier que l'accès à la modification est autorisé avec ROLE_ADMIN
@@ -252,7 +251,7 @@ class ArtistControllerTest extends WebTestCase
         $client->request('GET', '/artist/' . $nonExistentId . '/delete');
 
         // Vérifie la redirection
-        $this->assertResponseRedirects('/artist');
+        $this->assertStringContainsString('ROLE_ADMIN', $client->getResponse());
     }
     public function testGetArtist(): void
     {
