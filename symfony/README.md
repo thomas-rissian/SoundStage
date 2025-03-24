@@ -29,6 +29,12 @@ Si elles sont déjà installées, mettez-les à jour :
 
 ### Création et migration de la base de données
 
+Attention, veillez à avoir un dossier `/migrations` à la racine.
+
+```shell
+    mkdir -p migrations
+```
+
 ```shell
   symfony console doctrine:database:create
 ```
@@ -39,6 +45,12 @@ Si elles sont déjà installées, mettez-les à jour :
   symfony console doctrine:migrations:migrate
 ```
 ## Lancer le serveur
+
+Veillez à créer les dossiers `/public/uploads/images`, s'ils n'existent pas pour le stockage des images.
+
+```shell
+    mkdir -p public/uploads/images
+```
 
 ### Mode développement
 
